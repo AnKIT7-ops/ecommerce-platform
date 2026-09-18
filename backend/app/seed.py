@@ -144,13 +144,16 @@ CATALOGUE_TABLES = (
 )
 
 
-def _image_for(slug: str) -> str:
-    """Deterministic placeholder image.
+def _image_for(slug: str) -> str | None:
+    """Image URL for a seeded product.
 
-    Seeded by slug so each product keeps the same picture across reseeds.
-    Swap for real asset URLs when the catalogue has its own photography.
+    Deliberately ``None``: the demo catalogue has no photography, and borrowing
+    random stock photos puts a forest on a desk lamp, which reads as a bug
+    rather than a placeholder. The frontend renders a branded placeholder tile
+    instead. Set a real URL here (or via the admin API) once photos exist.
     """
-    return f"https://picsum.photos/seed/{slug}/600/600"
+    del slug
+    return None
 
 
 def seed_admin(db: Session) -> User | None:

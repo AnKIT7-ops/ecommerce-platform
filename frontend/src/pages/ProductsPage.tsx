@@ -187,11 +187,11 @@ export function ProductsPage() {
         </aside>
 
         <div>
-          <div className="mb-5 flex flex-wrap items-center gap-3">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
             <SearchBar
               value={searchDraft}
               onChange={setSearchDraft}
-              className="min-w-0 flex-1"
+              className="min-w-0 sm:flex-1"
               placeholder="Search by name or description"
             />
             <SortSelect value={sort} onChange={(next) => updateParams({ sort: next })} />
