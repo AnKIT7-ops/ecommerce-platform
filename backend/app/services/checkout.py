@@ -23,7 +23,7 @@ actually matters, so the mechanics are deliberate:
 from decimal import Decimal
 
 from fastapi import HTTPException, status
-from sqlalchemy import update
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.models.cart import CartItem
@@ -72,9 +72,18 @@ def create_order_from_cart(db: Session, user_id: int, data: OrderCreate) -> Orde
         if row is None:
             # Either the product was deactivated, or someone else took the
             # stock between adding to the cart and checking out.
-            product = db.get(Product, item.product_id)
-            available = product.stock_quantity if product else 0
-            name = product.name if product else f"Product {item.product_id}"
+            #
+            # Read the current values with a Core select rather than db.get():
+            # the product is already in the identity map (CartItem.product is
+            # joined-loaded) and the UPDATE above ran with
+            # synchronize_session=False, so db.get() would hand back a stale
+            # stock_quantity and report the wrong number to the user.
+            current = db.execute(
+                select(Product.name, Product.stock_quantity).where(
+                    Product.id == item.product_id
+                )
+            ).first()
+            name, available = current if current else (f"Product {item.product_id}", 0)
             raise HTTPException(
                 status.HTTP_409_CONFLICT,
                 f"{name} is no longer available in the requested quantity "

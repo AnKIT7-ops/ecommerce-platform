@@ -47,7 +47,10 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Run migrations against a live database connection."""
-    connectable = create_engine(get_url(), poolclass=pool.NullPool)
+    # The test fixtures pass connect_args to pin search_path at a dedicated
+    # schema when they cannot create a separate database.
+    connect_args = config.attributes.get("connect_args", {})
+    connectable = create_engine(get_url(), poolclass=pool.NullPool, connect_args=connect_args)
 
     with connectable.connect() as connection:
         context.configure(
