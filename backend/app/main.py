@@ -1,4 +1,8 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+
+from app.database import engine
+
 
 app = FastAPI(
     title="E-Commerce Platform API",
@@ -17,6 +21,17 @@ def root():
 
 @app.get("/health")
 def health_check():
-    return {
-        "status": "healthy"
-    }
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        return {
+            "status": "healthy",
+            "database": "connected",
+        }
+
+    except Exception:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+        }
