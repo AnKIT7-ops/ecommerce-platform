@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Ampere — design tokens
+
+   The store sells components and gear to people who read spec sheets, so the
+   visual language borrows from shelf labels and test equipment: hairline
+   rules, small caps eyebrows, and monospace tabular figures for every number
+   a shopper actually compares (price, stock, quantity, order id).
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces run cool grey rather than cream; ink is blue-black, not pure black. */
+  --color-paper: #ffffff;
+  --color-shell: #f2f3f5;
+  --color-ink: #11161c;
+  --color-muted: #5c6875;
+  --color-hairline: #e3e6ea;
+
+  /* One decisive action colour. Everything else stays quiet. */
+  --color-volt: #0b5fff;
+  --color-volt-dark: #0848c4;
+  --color-volt-tint: #eaf1ff;
+
+  /* Status */
+  --color-signal: #d93f0b;
+  --color-signal-tint: #fdeee8;
+  --color-good: #0e7c4a;
+  --color-good-tint: #e7f5ee;
+
+  --font-sans: "Archivo", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-card: 6px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-shell);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Every visible number lines up in a column. */
+  .tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Keyboard focus must always be visible, including on dark surfaces. */
+  :focus-visible {
+    outline: 2px solid var(--color-volt);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-volt);
+    color: #ffffff;
+  }
+}
+
+@layer utilities {
+  /* Small-caps label used for section eyebrows and spec strips. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
