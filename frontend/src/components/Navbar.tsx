@@ -163,7 +163,7 @@ export function Navbar({ categories }: NavbarProps) {
             </nav>
 
             <div className="border-t border-hairline pt-3">
-              <p className="eyebrow mb-2">Categories</p>
+              <p className="eyebrow label-narrow mb-2">Categories</p>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <Link

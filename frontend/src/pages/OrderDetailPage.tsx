@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { Badge, Button, ErrorMessage, LoadingSpinner } from "../components/ui";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ApiError, orderService } from "../services";
@@ -114,18 +115,13 @@ export function OrderDetailPage() {
         </Link>
       </nav>
 
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-hairline pb-6">
-        <div>
-          <p className="eyebrow">Order</p>
-          <h1 className="tabular mt-2 text-3xl font-extrabold tracking-tight text-ink">
-            {formatOrderRef(order.id)}
-          </h1>
-          <p className="mt-1.5 text-sm text-muted">
-            Placed {formatDateTime(order.created_at)}
-          </p>
-        </div>
-        <Badge className={status.className}>{status.label}</Badge>
-      </header>
+      <PageHeader
+        eyebrow="Order"
+        title={<span className="tabular">{formatOrderRef(order.id)}</span>}
+        meta={`Placed ${formatDateTime(order.created_at)}`}
+        action={<Badge className={status.className}>{status.label}</Badge>}
+        className="mb-0 pb-6"
+      />
 
       {/* Lifecycle rail. Hidden once cancelled, where the sequence no longer applies. */}
       {!isCancelled && (
@@ -150,7 +146,7 @@ export function OrderDetailPage() {
       )}
 
       <section className="mt-10">
-        <h2 className="text-base font-bold text-ink">Items</h2>
+        <h2 className="display-wide text-base font-bold text-ink">Items</h2>
         <ul className="mt-4 rounded-[6px] border border-hairline bg-paper px-5">
           {order.items.map((item) => (
             <li
@@ -186,7 +182,7 @@ export function OrderDetailPage() {
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
         <section className="rounded-[6px] border border-hairline bg-paper p-5">
-          <h2 className="eyebrow">Shipping to</h2>
+          <h2 className="eyebrow label-narrow">Shipping to</h2>
           <address className="mt-3 text-sm leading-relaxed text-ink not-italic">
             {order.shipping_full_name}
             <br />
@@ -211,7 +207,7 @@ export function OrderDetailPage() {
         </section>
 
         <section className="rounded-[6px] border border-hairline bg-paper p-5">
-          <h2 className="eyebrow">Delivery notes</h2>
+          <h2 className="eyebrow label-narrow">Delivery notes</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted">
             {order.notes || "None given."}
           </p>

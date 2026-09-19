@@ -11,7 +11,7 @@ export function CategoryFilter({ categories, selectedSlug, onSelect }: CategoryF
 
   return (
     <nav aria-label="Filter by category">
-      <h2 className="eyebrow mb-3">Category</h2>
+      <h2 className="eyebrow label-narrow mb-3">Category</h2>
       <ul className="flex flex-col gap-0.5">
         <li>
           <FilterButton

@@ -38,7 +38,7 @@ export function PriceFilter({ minPrice, maxPrice, onApply }: PriceFilterProps) {
 
   return (
     <div>
-      <h2 className="eyebrow mb-3">Price</h2>
+      <h2 className="eyebrow label-narrow mb-3">Price</h2>
       <div className="flex items-center gap-2">
         <input
           type="number"

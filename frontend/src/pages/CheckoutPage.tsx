@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { Button, EmptyState, Input, LoadingSpinner } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
@@ -107,7 +108,7 @@ export function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <h1 className="mb-8 text-3xl font-extrabold tracking-tight text-ink">Checkout</h1>
+        <PageHeader eyebrow="Checkout" title="Checkout" />
         <EmptyState
           title="There is nothing to check out"
           description="Add something to your cart first, then come back here to place the order."
@@ -123,15 +124,11 @@ export function CheckoutPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <p className="eyebrow">Checkout</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">
-          Where should this go?
-        </h1>
-        <p className="mt-1.5 text-sm text-muted">
-          No payment is taken. This is a demonstration store and checkout is simulated.
-        </p>
-      </header>
+      <PageHeader
+        eyebrow="Checkout"
+        title="Where should this go?"
+        description="No payment is taken. This is a demonstration store and checkout is simulated."
+      />
 
       <form onSubmit={handleSubmit} noValidate className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
@@ -145,7 +142,7 @@ export function CheckoutPage() {
           )}
 
           <section className="rounded-[6px] border border-hairline bg-paper p-6">
-            <h2 className="text-base font-bold text-ink">Customer</h2>
+            <h2 className="display-wide text-base font-bold text-ink">Customer</h2>
             <p className="mt-1 text-sm text-muted">
               Order updates go to{" "}
               <span className="font-medium text-ink">{user?.email}</span>.
@@ -177,7 +174,7 @@ export function CheckoutPage() {
           </section>
 
           <section className="rounded-[6px] border border-hairline bg-paper p-6">
-            <h2 className="text-base font-bold text-ink">Shipping address</h2>
+            <h2 className="display-wide text-base font-bold text-ink">Shipping address</h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
@@ -230,7 +227,7 @@ export function CheckoutPage() {
           </section>
 
           <section className="rounded-[6px] border border-hairline bg-paper p-6">
-            <h2 className="text-base font-bold text-ink">Delivery notes</h2>
+            <h2 className="display-wide text-base font-bold text-ink">Delivery notes</h2>
             <label htmlFor="notes" className="mt-4 block text-sm font-medium text-ink">
               Anything the courier should know
             </label>
@@ -248,7 +245,7 @@ export function CheckoutPage() {
 
         <aside>
           <div className="sticky top-32 rounded-[6px] border border-hairline bg-paper p-6">
-            <h2 className="text-base font-bold text-ink">Order summary</h2>
+            <h2 className="display-wide text-base font-bold text-ink">Order summary</h2>
 
             <ul className="mt-5 space-y-3">
               {items.map((item) => (

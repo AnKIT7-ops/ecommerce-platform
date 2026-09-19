@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { ProductGrid } from "../components/ProductGrid";
 import { ProductGridSkeleton } from "../components/ProductGridSkeleton";
-import { ProductImage } from "../components/ProductImage";
 import { Button, ErrorMessage } from "../components/ui";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import type { LayoutContext } from "../layouts/RootLayout";
 import { productService } from "../services";
 import type { CategoryWithCount, Product } from "../types";
-import { formatPrice, stockLabel } from "../utils/format";
 
 /**
  * The storefront's front page, built as an instrument panel: a graticule-lit
@@ -93,11 +92,7 @@ export function HomePage() {
           {isLoading ? (
             <ProductGridSkeleton count={4} />
           ) : (
-            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[6px] border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
-              {featured.map((product, position) => (
-                <SpecimenCard key={product.id} product={product} position={position} />
-              ))}
-            </div>
+            <ProductGrid products={featured} numbered />
           )}
         </Section>
 
@@ -303,55 +298,6 @@ function DepartmentIndex({ categories }: { categories: CategoryWithCount[] }) {
   );
 }
 
-const TONE_CLASS = {
-  good: "text-good",
-  low: "text-signal",
-  out: "text-muted",
-} as const;
-
-/**
- * A featured product shown as a catalogue specimen: registration marks at the
- * corners, an index number, and the price set large in tabular figures. Only
- * the four hero products use this; the rest of the page uses the shared card.
- */
-function SpecimenCard({ product, position }: { product: Product; position: number }) {
-  const stock = stockLabel(product.stock_quantity);
-
-  return (
-    <article
-      className="group reveal relative flex flex-col bg-paper transition-colors hover:bg-volt-tint/40"
-      style={{ animationDelay: `${position * 70}ms` }}
-    >
-      <span aria-hidden className="crosshair" />
-
-      <div className="flex items-center justify-between px-4 pt-4">
-        <span className="eyebrow label-narrow text-muted/70">
-          SPEC/{String(position + 1).padStart(2, "0")}
-        </span>
-        <span className={`eyebrow label-narrow ${TONE_CLASS[stock.tone]}`}>{stock.text}</span>
-      </div>
-
-      <ProductImage
-        src={product.image_url}
-        alt={product.name}
-        className="aspect-square w-full transition-transform duration-500 group-hover:scale-[1.04]"
-      />
-
-      <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
-        <h3 className="text-[15px] leading-snug font-semibold text-ink">
-          <Link to={`/products/${product.id}`} className="after:absolute after:inset-0">
-            {product.name}
-          </Link>
-        </h3>
-
-        <span className="tabular display-wide mt-auto pt-3 text-2xl font-bold text-ink">
-          {formatPrice(product.price)}
-        </span>
-      </div>
-    </article>
-  );
-}
-
 /** Closing statement, on the same lit panel as the hero so the page bookends. */
 function StockPanel() {
   return (
@@ -401,22 +347,18 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
+/** A titled band on the home page. The heading block itself is shared. */
 function Section({ index, eyebrow, title, description, action, children }: SectionProps) {
   return (
     <section className="py-14">
-      <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-hairline pb-5">
-        <div className="flex gap-4 sm:gap-6">
-          <span className="eyebrow label-narrow pt-1.5 text-muted/60">{index}</span>
-          <div>
-            <p className="eyebrow label-narrow">{eyebrow}</p>
-            <h2 className="display-wide mt-2 text-2xl font-extrabold text-ink sm:text-[2rem]">
-              {title}
-            </h2>
-            <p className="mt-2 max-w-md text-sm text-muted">{description}</p>
-          </div>
-        </div>
-        {action}
-      </div>
+      <PageHeader
+        level="h2"
+        index={index}
+        eyebrow={eyebrow}
+        title={title}
+        description={description}
+        action={action}
+      />
       {children}
     </section>
   );

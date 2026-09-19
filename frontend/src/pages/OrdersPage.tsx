@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { OrderCard } from "../components/OrderCard";
 import { Pagination } from "../components/Pagination";
+import { PageHeader } from "../components/PageHeader";
 import { Button, EmptyState, ErrorMessage, LoadingSpinner } from "../components/ui";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { orderService } from "../services";
@@ -43,16 +44,18 @@ export function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <p className="eyebrow">History</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">Your orders</h1>
-        {result && result.total > 0 && (
-          <p className="mt-1.5 text-sm text-muted">
-            <span className="tabular">{result.total}</span>{" "}
-            {result.total === 1 ? "order" : "orders"} placed
-          </p>
-        )}
-      </header>
+      <PageHeader
+        eyebrow="History"
+        title="Your orders"
+        meta={
+          result && result.total > 0 ? (
+            <>
+              <span className="tabular font-semibold text-ink">{result.total}</span>{" "}
+              {result.total === 1 ? "order" : "orders"} placed
+            </>
+          ) : undefined
+        }
+      />
 
       {error ? (
         <ErrorMessage

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { CartItemRow } from "../components/CartItemRow";
+import { PageHeader } from "../components/PageHeader";
 import { Button, EmptyState, LoadingSpinner } from "../components/ui";
 import { useCart } from "../hooks/useCart";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -23,7 +24,7 @@ export function CartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-        <h1 className="mb-8 text-3xl font-extrabold tracking-tight text-ink">Your cart</h1>
+        <PageHeader eyebrow="Cart" title="Your cart" />
         <EmptyState
           title="Your cart is empty"
           description="Browse the catalogue and add something. Items stay in your cart across visits."
@@ -39,16 +40,17 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">Cart</p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">Your cart</h1>
-          <p className="mt-1.5 text-sm text-muted">
-            <span className="tabular">{cart?.total_items ?? 0}</span>{" "}
+      <PageHeader
+        eyebrow="Cart"
+        title="Your cart"
+        meta={
+          <>
+            <span className="tabular font-semibold text-ink">{cart?.total_items ?? 0}</span>{" "}
             {cart?.total_items === 1 ? "item" : "items"}
-          </p>
-        </div>
-        <Button
+          </>
+        }
+        action={
+          <Button
           variant="ghost"
           size="sm"
           isLoading={isClearing}
@@ -60,10 +62,11 @@ export function CartPage() {
               setIsClearing(false);
             }
           }}
-        >
-          Empty cart
-        </Button>
-      </header>
+          >
+            Empty cart
+          </Button>
+        }
+      />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
         <section aria-label="Cart items">
@@ -81,7 +84,7 @@ export function CartPage() {
 
         <aside>
           <div className="sticky top-32 rounded-[6px] border border-hairline bg-paper p-6">
-            <h2 className="text-base font-bold text-ink">Order summary</h2>
+            <h2 className="display-wide text-base font-bold text-ink">Order summary</h2>
 
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between">

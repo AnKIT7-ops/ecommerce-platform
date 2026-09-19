@@ -8,6 +8,7 @@ import { ProductGrid } from "../components/ProductGrid";
 import { ProductGridSkeleton } from "../components/ProductGridSkeleton";
 import { SearchBar } from "../components/SearchBar";
 import { SortSelect } from "../components/SortSelect";
+import { PageHeader } from "../components/PageHeader";
 import { Button, EmptyState, ErrorMessage } from "../components/ui";
 import { useDebounced } from "../hooks/useDebounced";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -139,7 +140,7 @@ export function ProductsPage() {
       />
 
       <div>
-        <h2 className="eyebrow mb-3">Availability</h2>
+        <h2 className="eyebrow label-narrow mb-3">Availability</h2>
         <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
           <input
             type="checkbox"
@@ -163,15 +164,11 @@ export function ProductsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <p className="eyebrow">Catalogue</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">
-          {activeCategory?.name ?? "All products"}
-        </h1>
-        {activeCategory?.description && (
-          <p className="mt-2 max-w-2xl text-sm text-muted">{activeCategory.description}</p>
-        )}
-      </header>
+      <PageHeader
+        eyebrow="Catalogue"
+        title={activeCategory?.name ?? "All products"}
+        description={activeCategory?.description}
+      />
 
       <div className="grid gap-8 lg:grid-cols-[236px_1fr]">
         {/* Filters collapse into a disclosure below the lg breakpoint. */}

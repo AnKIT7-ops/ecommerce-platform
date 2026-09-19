@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { ProductGrid } from "../components/ProductGrid";
 import { ProductImage } from "../components/ProductImage";
 import { QuantitySelector } from "../components/QuantitySelector";
@@ -154,18 +155,18 @@ export function ProductDetailPage() {
             </Link>
           )}
 
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
+          <h1 className="display-wide mt-3 text-[1.75rem] leading-[1.05] font-extrabold text-ink sm:text-[2.25rem]">
             {product.name}
           </h1>
 
-          <p className="tabular mt-5 text-3xl font-bold text-ink">
+          <p className="tabular display-wide mt-5 text-[2rem] leading-none font-bold text-ink">
             {formatPrice(product.price)}
           </p>
 
           {/* Spec strip: the numbers a shopper compares, in one scannable row. */}
           <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-[6px] border border-hairline bg-hairline sm:grid-cols-3">
             <div className="bg-paper px-4 py-3">
-              <dt className="eyebrow">Availability</dt>
+              <dt className="eyebrow label-narrow">Availability</dt>
               <dd
                 className={`tabular mt-1 text-sm font-semibold ${
                   stock.tone === "out"
@@ -179,13 +180,13 @@ export function ProductDetailPage() {
               </dd>
             </div>
             <div className="bg-paper px-4 py-3">
-              <dt className="eyebrow">In stock</dt>
+              <dt className="eyebrow label-narrow">In stock</dt>
               <dd className="tabular mt-1 text-sm font-semibold text-ink">
                 {product.stock_quantity}
               </dd>
             </div>
             <div className="col-span-2 bg-paper px-4 py-3 sm:col-span-1">
-              <dt className="eyebrow">Item code</dt>
+              <dt className="eyebrow label-narrow">Item code</dt>
               <dd className="tabular mt-1 truncate text-sm text-ink">{product.slug}</dd>
             </div>
           </dl>
@@ -244,10 +245,11 @@ export function ProductDetailPage() {
 
       {related.length > 0 && (
         <section className="mt-20">
-          <p className="eyebrow">More from this department</p>
-          <h2 className="mt-2 mb-6 text-2xl font-extrabold tracking-tight text-ink">
-            Related products
-          </h2>
+          <PageHeader
+            level="h2"
+            eyebrow="More from this department"
+            title="Related products"
+          />
           <ProductGrid products={related} />
         </section>
       )}

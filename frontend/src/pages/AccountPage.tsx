@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Badge, Button, Input } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
+import { PageHeader } from "../components/PageHeader";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ApiError, authService } from "../services";
 import { formatDate } from "../utils/format";
@@ -45,24 +46,22 @@ export function AccountPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
-      <header className="mb-8">
-        <p className="eyebrow">Account</p>
-        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-ink">
-          {user.full_name || "Your account"}
-        </h1>
-        <p className="mt-1.5 text-sm text-muted">{user.email}</p>
-      </header>
+      <PageHeader
+        eyebrow="Account"
+        title={user.full_name || "Your account"}
+        meta={user.email}
+      />
 
       <section className="rounded-[6px] border border-hairline bg-paper p-6">
-        <h2 className="text-base font-bold text-ink">Account details</h2>
+        <h2 className="display-wide text-base font-bold text-ink">Account details</h2>
 
         <dl className="mt-5 grid gap-px overflow-hidden rounded-[6px] border border-hairline bg-hairline sm:grid-cols-3">
           <div className="bg-paper px-4 py-3">
-            <dt className="eyebrow">Member since</dt>
+            <dt className="eyebrow label-narrow">Member since</dt>
             <dd className="tabular mt-1 text-sm text-ink">{formatDate(user.created_at)}</dd>
           </div>
           <div className="bg-paper px-4 py-3">
-            <dt className="eyebrow">Account type</dt>
+            <dt className="eyebrow label-narrow">Account type</dt>
             <dd className="mt-1">
               <Badge
                 className={
@@ -76,7 +75,7 @@ export function AccountPage() {
             </dd>
           </div>
           <div className="bg-paper px-4 py-3">
-            <dt className="eyebrow">In your cart</dt>
+            <dt className="eyebrow label-narrow">In your cart</dt>
             <dd className="tabular mt-1 text-sm text-ink">
               {itemCount} {itemCount === 1 ? "item" : "items"}
             </dd>
@@ -136,7 +135,7 @@ export function AccountPage() {
       </section>
 
       <section className="mt-6 rounded-[6px] border border-hairline bg-paper p-6">
-        <h2 className="text-base font-bold text-ink">Sign out</h2>
+        <h2 className="display-wide text-base font-bold text-ink">Sign out</h2>
         <p className="mt-1 text-sm text-muted">
           Signing out clears your session on this device. Your cart is kept on the server.
         </p>

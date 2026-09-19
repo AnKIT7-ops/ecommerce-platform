@@ -7,7 +7,7 @@ export function Footer({ categories }: { categories: CategoryWithCount[] }) {
     <footer className="mt-20 border-t border-hairline bg-paper">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
-          <p className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-ink">
+          <p className="display-wide flex items-center gap-2 text-lg font-extrabold text-ink">
             <span
               aria-hidden="true"
               className="flex h-8 w-8 items-center justify-center rounded-[6px] bg-ink text-sm font-bold text-paper"
@@ -23,7 +23,7 @@ export function Footer({ categories }: { categories: CategoryWithCount[] }) {
         </div>
 
         <nav aria-label="Categories">
-          <h2 className="eyebrow mb-3">Shop</h2>
+          <h2 className="eyebrow label-narrow mb-3">Shop</h2>
           <ul className="space-y-2">
             {categories.slice(0, 6).map((category) => (
               <li key={category.id}>
@@ -39,7 +39,7 @@ export function Footer({ categories }: { categories: CategoryWithCount[] }) {
         </nav>
 
         <nav aria-label="Account">
-          <h2 className="eyebrow mb-3">Your account</h2>
+          <h2 className="eyebrow label-narrow mb-3">Your account</h2>
           <ul className="space-y-2">
             <li>
               <Link to="/orders" className="text-sm text-muted transition-colors hover:text-ink">
