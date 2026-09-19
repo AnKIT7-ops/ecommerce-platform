@@ -86,7 +86,9 @@ interface RequestOptions {
 }
 
 function buildUrl(path: string, query?: RequestOptions["query"]): string {
-  const url = new URL(`${API_URL}${path}`);
+  // API_URL is empty when the dev proxy serves /api from this same origin, so
+  // supply a base - `new URL` throws on a relative URL without one.
+  const url = new URL(`${API_URL}${path}`, window.location.origin);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
       if (value !== undefined && value !== "") {
