@@ -32,6 +32,11 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
 
   --radius-card: 6px;
+
+  /* Instrument surfaces: the hero and closing panel read as a lit readout
+     rather than a flat dark block. */
+  --color-panel: #0a0e13;
+  --color-trace: #1c242e;
 }
 
 @layer base {
@@ -83,6 +88,117 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Graticule: the measured grid of a scope screen or engineering drawing.
+     Two frequencies - a fine 16px sub-grid under a 96px major grid - so the
+     surface reads as calibrated rather than merely striped. */
+  .graticule::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.055) 1px, transparent 1px),
+      linear-gradient(to right, rgb(255 255 255 / 0.022) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.022) 1px, transparent 1px);
+    background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+    /* Fade the grid out at the edges so it sits behind the type, not on it. */
+    -webkit-mask-image: radial-gradient(115% 85% at 18% 0%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(115% 85% at 18% 0%, #000 30%, transparent 78%);
+  }
+
+  /* Film grain, so the dark panels have texture instead of dead flat fill. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Ruler rail: repeating tick marks, every fifth one full height. */
+  .tick-rail {
+    background-image:
+      repeating-linear-gradient(to right, var(--color-hairline) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(to right, var(--color-muted) 0 1px, transparent 1px 200px);
+    background-size: 100% 6px, 100% 11px;
+    background-position: bottom left;
+    background-repeat: repeat-x;
+  }
+
+  /* Archivo carries a width axis. Expanded for display type, condensed for
+     technical labels - one family doing two jobs, which is why it was chosen. */
+  .display-wide {
+    font-variation-settings: "wdth" 116;
+    letter-spacing: -0.03em;
+  }
+
+  .label-narrow {
+    font-variation-settings: "wdth" 78;
+    letter-spacing: 0.02em;
+  }
+
+  /* Crosshair registration marks on the specimen cards. */
+  .crosshair::before,
+  .crosshair::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 220ms ease;
+    border-color: var(--color-volt);
+  }
+  .crosshair::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid;
+    border-left: 1.5px solid;
+  }
+  .crosshair::after {
+    right: -1px;
+    bottom: -1px;
+    border-right: 1.5px solid;
+    border-bottom: 1.5px solid;
+  }
+  .group:hover .crosshair::before,
+  .group:hover .crosshair::after,
+  .group:focus-within .crosshair::before,
+  .group:focus-within .crosshair::after {
+    opacity: 1;
+  }
+
+  /* One orchestrated load: everything rises on a stagger set per element. */
+  .reveal {
+    animation: reveal-up 760ms cubic-bezier(0.22, 0.68, 0.26, 1) backwards;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The volt trace that wipes across a department row on hover. */
+  .trace-sweep {
+    background-image: linear-gradient(to right, var(--color-volt-tint), transparent);
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    transition: background-size 420ms cubic-bezier(0.22, 0.68, 0.26, 1);
+  }
+  .group:hover .trace-sweep,
+  .group:focus-within .trace-sweep {
+    background-size: 100% 100%;
   }
 
   .line-clamp-3 {

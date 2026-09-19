@@ -3,12 +3,25 @@ import { Link, useOutletContext } from "react-router-dom";
 
 import { ProductGrid } from "../components/ProductGrid";
 import { ProductGridSkeleton } from "../components/ProductGridSkeleton";
+import { ProductImage } from "../components/ProductImage";
 import { Button, ErrorMessage } from "../components/ui";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import type { LayoutContext } from "../layouts/RootLayout";
 import { productService } from "../services";
-import type { Product } from "../types";
+import type { CategoryWithCount, Product } from "../types";
+import { formatPrice, stockLabel } from "../utils/format";
 
+/**
+ * The storefront's front page, built as an instrument panel: a graticule-lit
+ * hero, a ruler rail, a department index that reads like a switchboard, and
+ * four featured products presented as catalogue specimens with registration
+ * marks. Everything below the hero reuses the shared grid so the page still
+ * looks like the rest of the store.
+ *
+ * Load is one orchestrated sequence rather than scattered micro-animations:
+ * each block rises once on its own `animationDelay`. `prefers-reduced-motion`
+ * is honoured globally in index.css.
+ */
 export function HomePage() {
   useDocumentTitle();
   const { categories } = useOutletContext<LayoutContext>();
@@ -48,7 +61,8 @@ export function HomePage() {
 
   return (
     <div>
-      <Hero />
+      <Hero departments={categories.length} />
+      <MeasureRail />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {error && (
@@ -61,30 +75,10 @@ export function HomePage() {
           </div>
         )}
 
-        <Section
-          eyebrow="Browse"
-          title="Shop by category"
-          description="Six departments, each stocked with gear we would use ourselves."
-        >
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/products?category=${category.slug}`}
-                className="group flex flex-col justify-between rounded-[6px] border border-hairline bg-paper p-4 transition-colors hover:border-ink"
-              >
-                <span className="text-sm font-semibold text-ink group-hover:text-volt">
-                  {category.name}
-                </span>
-                <span className="tabular mt-6 text-xs text-muted">
-                  {category.product_count} item{category.product_count === 1 ? "" : "s"}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </Section>
+        <DepartmentIndex categories={categories} />
 
         <Section
+          index="02"
           eyebrow="In stock now"
           title="The serious end of the catalogue"
           description="Our highest-specified gear, all of it on the shelf today."
@@ -96,10 +90,19 @@ export function HomePage() {
             </Link>
           }
         >
-          {isLoading ? <ProductGridSkeleton count={4} /> : <ProductGrid products={featured} />}
+          {isLoading ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[6px] border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
+              {featured.map((product, position) => (
+                <SpecimenCard key={product.id} product={product} position={position} />
+              ))}
+            </div>
+          )}
         </Section>
 
         <Section
+          index="03"
           eyebrow="Just landed"
           title="New arrivals"
           description="The most recent additions to the shelves."
@@ -113,71 +116,110 @@ export function HomePage() {
         >
           {isLoading ? <ProductGridSkeleton count={8} /> : <ProductGrid products={newest} />}
         </Section>
-
-        <section className="my-16 rounded-[6px] border border-hairline bg-paper px-6 py-12 text-center sm:px-12">
-          <p className="eyebrow">Why shop here</p>
-          <h2 className="mx-auto mt-3 max-w-2xl text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
-            Stock counts you can trust
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted">
-            Every listing shows what is genuinely on the shelf. If two people reach for the last
-            unit at the same moment, only one order goes through, and the other person is told
-            immediately rather than a week later.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/products">
-              <Button size="lg">Start shopping</Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="secondary" size="lg">
-                Create an account
-              </Button>
-            </Link>
-          </div>
-        </section>
       </div>
+
+      <StockPanel />
     </div>
   );
 }
 
-function Hero() {
-  return (
-    <section className="border-b border-hairline bg-ink text-paper">
-      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-        <p className="eyebrow text-paper/60">Est. 2026 &middot; Ships worldwide</p>
-        <h1 className="mt-5 max-w-3xl text-4xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl">
-          The parts bin for people who read the spec sheet.
-        </h1>
-        <p className="mt-6 max-w-xl text-base leading-relaxed text-paper/70">
-          Laptops, handsets, peripherals and workspace hardware, described in plain language with
-          the numbers that actually matter.
-        </p>
+/* -------------------------------------------------------------------------- */
 
-        <div className="mt-9 flex flex-wrap gap-3">
-          <Link to="/products">
-            <Button size="lg">Browse the catalogue</Button>
-          </Link>
-          <Link to="/products?in_stock=true">
-            <Button
-              size="lg"
-              variant="secondary"
-              className="border-paper/25 bg-transparent text-paper hover:border-paper hover:bg-paper/10"
-            >
-              Only what is in stock
-            </Button>
-          </Link>
+function Hero({ departments }: { departments: number }) {
+  return (
+    <section className="graticule grain relative overflow-hidden border-b border-hairline bg-panel text-paper">
+      {/* A single volt bloom off the top-left corner, so the panel looks lit
+          from somewhere rather than uniformly dark. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-32 h-[34rem] w-[34rem] rounded-full opacity-[0.16] blur-[110px]"
+        style={{ background: "radial-gradient(circle, var(--color-volt), transparent 68%)" }}
+      />
+
+      <div className="relative mx-auto grid max-w-7xl gap-x-12 gap-y-14 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-28">
+        <div className="lg:col-span-8">
+          <p
+            className="eyebrow reveal flex items-center gap-2.5 text-paper/55"
+            style={{ animationDelay: "40ms" }}
+          >
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-volt shadow-[0_0_10px_2px_var(--color-volt)]" />
+            Est. 2026 &middot; Ships worldwide
+          </p>
+
+          {/* The headline runs wider than the body copy column and is set on
+              Archivo's expanded axis - the one piece of type meant to be
+              remembered. */}
+          <h1
+            className="display-wide reveal mt-6 text-[2.75rem] leading-[0.94] font-extrabold sm:text-6xl lg:text-[4.75rem]"
+            style={{ animationDelay: "120ms" }}
+          >
+            {/* Inline on phones so the line breaks fall naturally; forced to
+                three measured lines once there is room for them. */}
+            <span className="sm:block">The parts bin for </span>
+            <span className="sm:block">people who read </span>
+            <span className="relative inline-block">
+              the spec sheet.
+              <span
+                aria-hidden
+                className="absolute -bottom-2 left-0 h-[3px] w-full bg-volt"
+                style={{ animation: "reveal-up 900ms 620ms backwards" }}
+              />
+            </span>
+          </h1>
+
+          <p
+            className="reveal mt-9 max-w-lg text-base leading-relaxed text-paper/65"
+            style={{ animationDelay: "220ms" }}
+          >
+            Laptops, handsets, peripherals and workspace hardware, described in plain language
+            with the numbers that actually matter.
+          </p>
+
+          <div
+            className="reveal mt-9 flex flex-wrap gap-3"
+            style={{ animationDelay: "300ms" }}
+          >
+            <Link to="/products">
+              <Button size="lg">Browse the catalogue</Button>
+            </Link>
+            <Link to="/products?in_stock=true">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="border-paper/25 bg-transparent text-paper hover:border-paper hover:bg-paper/10"
+              >
+                Only what is in stock
+              </Button>
+            </Link>
+          </div>
         </div>
 
-        {/* Spec strip: the shelf-label motif that runs through the whole store. */}
-        <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-px overflow-hidden rounded-[6px] border border-paper/15 bg-paper/15">
+        {/* Readout column: the spec strip from the old hero, rebuilt as a
+            stacked instrument panel and moved alongside the headline so the
+            composition is asymmetric rather than centred. */}
+        <dl
+          className="reveal self-end lg:col-span-4"
+          style={{ animationDelay: "380ms" }}
+        >
           {[
-            { label: "Departments", value: "06" },
-            { label: "Warranty", value: "24mo" },
-            { label: "Dispatch", value: "24h" },
+            { label: "Departments", value: String(departments).padStart(2, "0"), note: "live" },
+            { label: "Warranty", value: "24", unit: "mo", note: "all stock" },
+            { label: "Dispatch", value: "24", unit: "h", note: "weekdays" },
           ].map((stat) => (
-            <div key={stat.label} className="bg-ink px-4 py-4">
-              <dt className="eyebrow text-paper/50">{stat.label}</dt>
-              <dd className="tabular mt-1 text-xl font-bold text-paper">{stat.value}</dd>
+            <div
+              key={stat.label}
+              className="flex items-baseline justify-between gap-4 border-t border-paper/12 py-4 first:border-t-0"
+            >
+              <div>
+                <dt className="eyebrow label-narrow text-paper/45">{stat.label}</dt>
+                <dd className="tabular mt-1.5 text-3xl leading-none font-bold text-paper">
+                  {stat.value}
+                  {stat.unit && (
+                    <span className="ml-0.5 text-sm font-medium text-paper/45">{stat.unit}</span>
+                  )}
+                </dd>
+              </div>
+              <span className="eyebrow label-narrow text-paper/30">{stat.note}</span>
             </div>
           ))}
         </dl>
@@ -186,7 +228,172 @@ function Hero() {
   );
 }
 
+/** A ruler strip. Pure decoration, but it sets the measuring motif early. */
+function MeasureRail() {
+  return (
+    <div
+      aria-hidden
+      className="tick-rail mx-auto h-[11px] max-w-7xl px-4 opacity-60 sm:px-6 lg:px-8"
+    />
+  );
+}
+
+function DepartmentIndex({ categories }: { categories: CategoryWithCount[] }) {
+  return (
+    <Section
+      index="01"
+      eyebrow="Browse"
+      title="Shop by department"
+      description="Six departments, each stocked with gear we would use ourselves."
+      action={
+        <Link to="/products">
+          <Button variant="secondary" size="sm">
+            View the full catalogue
+          </Button>
+        </Link>
+      }
+    >
+      {/* A switchboard index rather than a row of boxes: numbered rows, counts
+          right-aligned in tabular figures, a volt trace wiping across on hover. */}
+      <ul className="border-t border-hairline">
+        {categories.map((category, position) => (
+          <li key={category.id} className="group relative">
+            <Link
+              to={`/products?category=${category.slug}`}
+              className="trace-sweep flex items-center gap-4 border-b border-hairline py-4 pr-2 pl-3 sm:gap-6 sm:pl-4"
+            >
+              <span className="eyebrow label-narrow w-7 shrink-0 text-muted/70">
+                {String(position + 1).padStart(2, "0")}
+              </span>
+
+              <span className="display-wide flex-1 text-lg font-bold text-ink transition-colors group-hover:text-volt sm:text-2xl">
+                {category.name}
+              </span>
+
+              <span className="hidden max-w-sm flex-1 truncate text-[13px] text-muted md:block">
+                {category.description}
+              </span>
+
+              <span className="tabular w-20 shrink-0 text-right text-sm font-semibold text-ink">
+                {String(category.product_count).padStart(2, "0")}
+                <span className="ml-1 text-[11px] font-normal text-muted">
+                  item{category.product_count === 1 ? "" : "s"}
+                </span>
+              </span>
+
+              <svg
+                aria-hidden
+                viewBox="0 0 16 16"
+                className="h-4 w-4 shrink-0 text-muted transition-[transform,color] group-hover:translate-x-1 group-hover:text-volt"
+              >
+                <path
+                  d="M2 8h11M9 4l4 4-4 4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+const TONE_CLASS = {
+  good: "text-good",
+  low: "text-signal",
+  out: "text-muted",
+} as const;
+
+/**
+ * A featured product shown as a catalogue specimen: registration marks at the
+ * corners, an index number, and the price set large in tabular figures. Only
+ * the four hero products use this; the rest of the page uses the shared card.
+ */
+function SpecimenCard({ product, position }: { product: Product; position: number }) {
+  const stock = stockLabel(product.stock_quantity);
+
+  return (
+    <article
+      className="group reveal relative flex flex-col bg-paper transition-colors hover:bg-volt-tint/40"
+      style={{ animationDelay: `${position * 70}ms` }}
+    >
+      <span aria-hidden className="crosshair" />
+
+      <div className="flex items-center justify-between px-4 pt-4">
+        <span className="eyebrow label-narrow text-muted/70">
+          SPEC/{String(position + 1).padStart(2, "0")}
+        </span>
+        <span className={`eyebrow label-narrow ${TONE_CLASS[stock.tone]}`}>{stock.text}</span>
+      </div>
+
+      <ProductImage
+        src={product.image_url}
+        alt={product.name}
+        className="aspect-square w-full transition-transform duration-500 group-hover:scale-[1.04]"
+      />
+
+      <div className="flex flex-1 flex-col gap-2 px-4 pb-4">
+        <h3 className="text-[15px] leading-snug font-semibold text-ink">
+          <Link to={`/products/${product.id}`} className="after:absolute after:inset-0">
+            {product.name}
+          </Link>
+        </h3>
+
+        <span className="tabular display-wide mt-auto pt-3 text-2xl font-bold text-ink">
+          {formatPrice(product.price)}
+        </span>
+      </div>
+    </article>
+  );
+}
+
+/** Closing statement, on the same lit panel as the hero so the page bookends. */
+function StockPanel() {
+  return (
+    <section className="graticule grain relative mt-16 overflow-hidden border-t border-hairline bg-panel text-paper">
+      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-8">
+        <div className="lg:col-span-5">
+          <p className="eyebrow label-narrow text-paper/45">Why shop here</p>
+          <h2 className="display-wide mt-3 text-3xl leading-[1.02] font-extrabold sm:text-[2.75rem]">
+            Stock counts
+            <br />
+            you can trust.
+          </h2>
+        </div>
+
+        <div className="lg:col-span-6 lg:col-start-7">
+          <p className="max-w-xl text-base leading-relaxed text-paper/65">
+            Every listing shows what is genuinely on the shelf. If two people reach for the last
+            unit at the same moment, only one order goes through, and the other person is told
+            immediately rather than a week later.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link to="/products">
+              <Button size="lg">Start shopping</Button>
+            </Link>
+            <Link to="/register">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="border-paper/25 bg-transparent text-paper hover:border-paper hover:bg-paper/10"
+              >
+                Create an account
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 interface SectionProps {
+  index: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -194,14 +401,19 @@ interface SectionProps {
   children: React.ReactNode;
 }
 
-function Section({ eyebrow, title, description, action, children }: SectionProps) {
+function Section({ index, eyebrow, title, description, action, children }: SectionProps) {
   return (
-    <section className="py-12">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow">{eyebrow}</p>
-          <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-ink">{title}</h2>
-          <p className="mt-1.5 text-sm text-muted">{description}</p>
+    <section className="py-14">
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-hairline pb-5">
+        <div className="flex gap-4 sm:gap-6">
+          <span className="eyebrow label-narrow pt-1.5 text-muted/60">{index}</span>
+          <div>
+            <p className="eyebrow label-narrow">{eyebrow}</p>
+            <h2 className="display-wide mt-2 text-2xl font-extrabold text-ink sm:text-[2rem]">
+              {title}
+            </h2>
+            <p className="mt-2 max-w-md text-sm text-muted">{description}</p>
+          </div>
         </div>
         {action}
       </div>
