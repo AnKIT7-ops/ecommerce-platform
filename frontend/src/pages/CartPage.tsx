@@ -51,17 +51,17 @@ export function CartPage() {
         }
         action={
           <Button
-          variant="ghost"
-          size="sm"
-          isLoading={isClearing}
-          onClick={async () => {
-            setIsClearing(true);
-            try {
-              await clear();
-            } finally {
-              setIsClearing(false);
-            }
-          }}
+            variant="ghost"
+            size="sm"
+            isLoading={isClearing}
+            onClick={async () => {
+              setIsClearing(true);
+              try {
+                await clear();
+              } finally {
+                setIsClearing(false);
+              }
+            }}
           >
             Empty cart
           </Button>
