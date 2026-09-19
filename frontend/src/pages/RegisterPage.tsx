@@ -40,6 +40,8 @@ export function RegisterPage() {
   function validate(): boolean {
     const errors: Record<string, string> = {};
 
+    if (!fullName.trim()) errors.fullName = "Enter your name.";
+
     if (!email.trim()) errors.email = "Enter your email address.";
     else if (!/^\S+@\S+\.\S+$/.test(email.trim()))
       errors.email = "Enter a valid email address.";
@@ -64,7 +66,7 @@ export function RegisterPage() {
 
     setIsSubmitting(true);
     try {
-      await register(email.trim(), password, fullName.trim() || undefined);
+      await register(email.trim(), password, fullName.trim());
       navigate(destination, { replace: true });
     } catch (caught) {
       if (caught instanceof ApiError) {
@@ -111,10 +113,11 @@ export function RegisterPage() {
           type="text"
           name="name"
           autoComplete="name"
+          required
           value={fullName}
           onChange={(event) => setFullName(event.target.value)}
-          error={fieldErrors.full_name}
-          placeholder="Optional"
+          error={fieldErrors.fullName ?? fieldErrors.full_name}
+          placeholder="How should we address you?"
         />
 
         <Input

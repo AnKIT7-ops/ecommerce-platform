@@ -85,6 +85,7 @@ export function AccountPage() {
         <form onSubmit={handleSave} className="mt-6 max-w-sm space-y-4">
           <Input
             label="Full name"
+            required
             value={fullName}
             onChange={(event) => setFullName(event.target.value)}
             placeholder="How should we address you?"

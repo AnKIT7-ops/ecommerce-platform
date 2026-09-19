@@ -27,7 +27,7 @@ def test_register_creates_customer_and_returns_tokens(client: TestClient) -> Non
 def test_register_lowercases_email(client: TestClient, db_session: Session) -> None:
     client.post(
         "/api/auth/register",
-        json={"email": "MiXeD@Example.Com", "password": "averysafepw1"},
+        json={"email": "MiXeD@Example.Com", "password": "averysafepw1", "full_name": "Mixed Case"},
     )
     user = db_session.execute(
         select(User).where(User.email == "mixed@example.com")
@@ -39,7 +39,7 @@ def test_register_never_grants_admin(client: TestClient, db_session: Session) ->
     """Role must not be settable through the public registration endpoint."""
     client.post(
         "/api/auth/register",
-        json={"email": "sneaky@example.com", "password": "averysafepw1", "role": "admin"},
+        json={"email": "sneaky@example.com", "password": "averysafepw1", "full_name": "Sneaky User", "role": "admin"},
     )
     user = db_session.execute(
         select(User).where(User.email == "sneaky@example.com")
@@ -52,7 +52,7 @@ def test_register_stores_a_hash_not_the_password(
 ) -> None:
     client.post(
         "/api/auth/register",
-        json={"email": "hash@example.com", "password": "averysafepw1"},
+        json={"email": "hash@example.com", "password": "averysafepw1", "full_name": "Hash User"},
     )
     user = db_session.execute(select(User).where(User.email == "hash@example.com")).scalar_one()
 
@@ -60,10 +60,45 @@ def test_register_stores_a_hash_not_the_password(
     assert user.password_hash.startswith("$2b$")
 
 
+def test_register_requires_a_full_name(client: TestClient) -> None:
+    """The name is mandatory; omitting it is a 422, not a null row."""
+    response = client.post(
+        "/api/auth/register",
+        json={"email": "anon@example.com", "password": "averysafepw1"},
+    )
+    assert response.status_code == 422
+
+
+def test_register_rejects_a_whitespace_only_full_name(client: TestClient) -> None:
+    """A bare min_length would accept "   " and store a blank-looking name."""
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "email": "blank@example.com",
+            "password": "averysafepw1",
+            "full_name": "   ",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_register_trims_the_full_name(client: TestClient) -> None:
+    response = client.post(
+        "/api/auth/register",
+        json={
+            "email": "padded@example.com",
+            "password": "averysafepw1",
+            "full_name": "  Padded Name  ",
+        },
+    )
+    assert response.status_code == 201
+    assert response.json()["user"]["full_name"] == "Padded Name"
+
+
 def test_register_rejects_duplicate_email(client: TestClient, customer_user: User) -> None:
     response = client.post(
         "/api/auth/register",
-        json={"email": CUSTOMER_EMAIL, "password": "averysafepw1"},
+        json={"email": CUSTOMER_EMAIL, "password": "averysafepw1", "full_name": "Duplicate User"},
     )
     assert response.status_code == 409
 
