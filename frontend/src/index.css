@@ -25,7 +25,9 @@
   --color-volt-tint: #eaf1ff;
 
   /* Status */
-  --color-signal: #d93f0b;
+  /* Darkened from #d93f0b, which fell to 3.98:1 against --color-signal-tint -
+     under AA for the small text used in the cart's overstock warning. */
+  --color-signal: #c23508;
   --color-signal-tint: #fdeee8;
   --color-good: #0e7c4a;
   --color-good-tint: #e7f5ee;
