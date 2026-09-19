@@ -92,9 +92,12 @@ def _seed_race(live_engine: Engine, stock: int) -> int:
             User(
                 email=email,
                 password_hash=hash_password("racerpassword1"),
+                full_name=f"Racer {index}",
                 role=UserRole.CUSTOMER,
             )
-            for email in ("racer1@example.com", "racer2@example.com")
+            for index, email in enumerate(
+                ("racer1@example.com", "racer2@example.com"), start=1
+            )
         )
         db.commit()
         return product.id

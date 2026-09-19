@@ -13,7 +13,7 @@ export type UserRole = "customer" | "admin";
 export interface User {
   id: number;
   email: string;
-  full_name: string | null;
+  full_name: string;
   role: UserRole;
   is_active: boolean;
   created_at: string;

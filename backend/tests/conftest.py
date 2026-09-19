@@ -221,6 +221,7 @@ def other_user(db_session: Session) -> User:
     user = User(
         email=OTHER_EMAIL,
         password_hash=hash_password(OTHER_PASSWORD),
+        full_name="Other Customer",
         role=UserRole.CUSTOMER,
     )
     db_session.add(user)

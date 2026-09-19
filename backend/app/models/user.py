@@ -35,7 +35,7 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     # bcrypt hashes are always 60 characters.
     password_hash: Mapped[str] = mapped_column(String(60), nullable=False)
-    full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(
         # A VARCHAR + CHECK rather than a native PG enum: native enums make
         # alembic autogenerate silently miss added values and leave orphaned
