@@ -204,7 +204,8 @@ cd backend
 .venv/Scripts/python -m app.seed --reset    # wipe catalogue/carts/orders, then insert
 ```
 
-This creates 6 categories and 35 products.
+This creates 6 categories (Electronics, Laptops, Smartphones, Tablets, Accessories,
+Home & Office) and 35 products, each with a real product photo.
 
 ### Creating the first administrator
 
@@ -377,9 +378,14 @@ These are deliberate, and each has a clear upgrade path.
   orders. The UI disables the button while submitting, which covers the realistic
   case; the real fix is a client-supplied `Idempotency-Key` with a unique column on
   `orders`.
-- **No product photography.** Seeded products have `image_url = NULL` and the
-  frontend renders a deterministic placeholder tile. Set `image_url` on a product
-  to use a real photo.
+- **Product photos are third-party demo assets.** The seeded catalogue points at
+  the public [dummyjson](https://dummyjson.com) demo image CDN, which serves real
+  product shots on clean backgrounds. They reference real brands and are not
+  licensed for commercial use, so replace the catalogue with your own products
+  and photography before any real deployment. The CDN rejects non-browser user
+  agents (a plain `curl`/`urllib` fetch returns 403), which is fine for the
+  frontend but worth knowing if you script against it. If the CDN is unreachable
+  the UI falls back to a branded placeholder tile, so the grid never breaks.
 - **No admin UI.** Administration happens through `/docs`.
 - **Refresh tokens are not revocable.** There is no token store; signing out clears
   tokens client-side. Adding a `token_version` column to `users` would give

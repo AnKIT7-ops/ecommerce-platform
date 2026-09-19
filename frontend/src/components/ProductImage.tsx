@@ -28,10 +28,10 @@ function hueOf(name: string): number {
 /**
  * Product photo, with a branded placeholder when there is no image.
  *
- * The seed catalogue ships without photography, so rather than borrowing
- * unrelated stock images (a forest standing in for a desk lamp reads as a bug,
- * not a placeholder) the fallback is a deterministic tinted tile carrying the
- * product's initials. Set `image_url` on a product to use a real photo.
+ * Photos are served from an external CDN, so a missing `image_url`, a blocked
+ * request or an offline machine all have to degrade to something that looks
+ * deliberate. The fallback is a deterministic tinted tile carrying the
+ * product's initials rather than a broken-image icon or a collapsed card.
  */
 export function ProductImage({ src, alt, className = "" }: ProductImageProps) {
   const [failed, setFailed] = useState(false);

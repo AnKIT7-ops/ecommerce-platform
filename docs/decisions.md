@@ -206,12 +206,33 @@ the query string rather than component state. Every view is then shareable and t
 back button behaves the way shoppers expect. Typing is debounced before it reaches
 the URL so a keystroke does not produce a history entry.
 
-## 15. Seeded products carry no photography
+## 15. Catalogue shaped around available product photography
 
-`image_url` is `NULL` for every seeded product. Pointing at a random stock-photo
+The catalogue was originally invented (six categories including Gaming, 35 made-up
+products) and shipped without images, because pointing at a random stock-photo
 service produced a forest for a desk lamp, which reads as a bug rather than a
-placeholder. The frontend renders a deterministic tinted tile with the product's
-initials, which reads as intentional. Real photos work by setting `image_url`.
+placeholder.
+
+A keyword-matched service was tried next. It gets the subject right but returns
+amateur photography: the laptop listing showed a cat sitting beside a MacBook.
+
+The catalogue was therefore reshaped around a source of genuine product shots
+(the public dummyjson demo CDN, clean backgrounds, 1000x1000). That source has
+no gaming gear, so **Gaming was replaced by Tablets**; the rest of the categories
+survived. Product names and images now come from that dataset, while prices,
+stock levels and all copy remain ours.
+
+Two consequences worth knowing:
+
+- The images reference real brands and are demo assets, not licensed product
+  photography. They must be replaced before any real deployment.
+- The CDN rejects non-browser user agents, so a plain `curl` or `urllib` fetch
+  returns 403 while the browser loads them fine. Any script that validates these
+  URLs has to send a browser `User-Agent`.
+
+`ProductImage` still falls back to a deterministic tinted tile with the product's
+initials whenever `image_url` is null or the request fails, so an offline or
+blocked CDN degrades to something that looks intentional rather than broken.
 
 ## 16. Pagination envelope fixed early
 
