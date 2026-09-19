@@ -15,6 +15,27 @@
       href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <!--
+      Resolve the theme before first paint. Doing this in React would leave a
+      light flash on every load for dark-theme users, because the app only
+      mounts after the stylesheet has already painted the body.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("ampere.theme");
+          document.documentElement.dataset.theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+        } catch (error) {
+          /* Storage blocked (private mode); fall back to the light theme. */
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

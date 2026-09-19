@@ -20,6 +20,8 @@
   /* One decisive action colour. Everything else stays quiet. */
   --color-volt: #0b5fff;
   --color-volt-dark: #0848c4;
+  /* Primary-button hover. Must stay darker than volt so white text holds. */
+  --color-volt-hover: #0848c4;
   --color-volt-tint: #eaf1ff;
 
   /* Status */
@@ -37,6 +39,48 @@
      rather than a flat dark block. */
   --color-panel: #0a0e13;
   --color-trace: #1c242e;
+
+  /* Panels are dark in BOTH themes, so their foreground is a constant. Using
+     --color-paper here would invert with the theme and leave dark-on-dark. */
+  --color-panel-ink: #eef2f7;
+}
+
+/* ---------------------------------------------------------------------------
+   Dark theme
+
+   The inline script in index.html resolves the stored choice, or the system
+   preference, into an explicit data-theme before first paint, so there is no
+   flash and this one selector is all the CSS needs. Surfaces keep the same
+   elevation ladder as the light theme, just inverted: shell sits behind paper,
+   and panel stays darkest so the hero still reads as a lit instrument.
+   --------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  --color-paper: #12181f;
+  --color-shell: #0b0f14;
+  --color-ink: #e6ecf3;
+  --color-muted: #8b98a6;
+  --color-hairline: #222b35;
+
+  /* Volt is lifted slightly; volt-dark is a text colour on tinted chips, so on
+     a dark surface it has to become lighter, not darker. */
+  --color-volt: #3d7dff;
+  --color-volt-dark: #a6c6ff;
+  --color-volt-hover: #2b64d6;
+  --color-volt-tint: #14203a;
+
+  --color-signal: #ff8154;
+  --color-signal-tint: #2d150c;
+  --color-good: #3fd396;
+  --color-good-tint: #0c2a1d;
+
+  --color-panel: #05080b;
+
+  /* Native controls, scrollbars and form widgets follow. */
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
 @layer base {

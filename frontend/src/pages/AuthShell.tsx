@@ -31,15 +31,15 @@ export function AuthShell({ eyebrow, title, subtitle, children, footer }: AuthSh
       </Link>
 
       <div className="mt-10 overflow-hidden rounded-[6px] border border-hairline bg-paper">
-        <div className="graticule grain relative bg-panel px-6 py-7 text-paper sm:px-8">
-          <p className="eyebrow label-narrow relative flex items-center gap-2 text-paper/50">
+        <div className="graticule grain relative bg-panel px-6 py-7 text-panel-ink sm:px-8">
+          <p className="eyebrow label-narrow relative flex items-center gap-2 text-panel-ink/50">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-volt shadow-[0_0_10px_2px_var(--color-volt)]" />
             {eyebrow}
           </p>
           <h1 className="display-wide relative mt-2.5 text-[1.75rem] leading-[1.05] font-extrabold">
             {title}
           </h1>
-          <p className="relative mt-2 text-sm leading-relaxed text-paper/60">{subtitle}</p>
+          <p className="relative mt-2 text-sm leading-relaxed text-panel-ink/60">{subtitle}</p>
         </div>
 
         <div className="p-6 sm:p-8">{children}</div>

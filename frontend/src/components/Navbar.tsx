@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useNavigate, useSearchParams } from "react-
 import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
 import type { CategoryWithCount } from "../types";
+import { ThemeToggle } from "./ThemeToggle";
 import { SearchBar } from "./SearchBar";
 
 interface NavbarProps {
@@ -86,10 +87,12 @@ export function Navbar({ categories }: NavbarProps) {
               </Link>
             </>
           )}
+          <ThemeToggle className="ml-1" />
           <CartLink count={itemCount} />
         </nav>
 
         <div className="ml-auto flex items-center gap-1 md:hidden">
+          <ThemeToggle />
           <CartLink count={itemCount} />
           <button
             type="button"

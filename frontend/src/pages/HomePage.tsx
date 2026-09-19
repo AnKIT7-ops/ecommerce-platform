@@ -122,7 +122,7 @@ export function HomePage() {
 
 function Hero({ departments }: { departments: number }) {
   return (
-    <section className="graticule grain relative overflow-hidden border-b border-hairline bg-panel text-paper">
+    <section className="graticule grain relative overflow-hidden border-b border-hairline bg-panel text-panel-ink">
       {/* A single volt bloom off the top-left corner, so the panel looks lit
           from somewhere rather than uniformly dark. */}
       <div
@@ -134,7 +134,7 @@ function Hero({ departments }: { departments: number }) {
       <div className="relative mx-auto grid max-w-7xl gap-x-12 gap-y-14 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-28">
         <div className="lg:col-span-8">
           <p
-            className="eyebrow reveal flex items-center gap-2.5 text-paper/55"
+            className="eyebrow reveal flex items-center gap-2.5 text-panel-ink/55"
             style={{ animationDelay: "40ms" }}
           >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-volt shadow-[0_0_10px_2px_var(--color-volt)]" />
@@ -163,7 +163,7 @@ function Hero({ departments }: { departments: number }) {
           </h1>
 
           <p
-            className="reveal mt-9 max-w-lg text-base leading-relaxed text-paper/65"
+            className="reveal mt-9 max-w-lg text-base leading-relaxed text-panel-ink/65"
             style={{ animationDelay: "220ms" }}
           >
             Laptops, handsets, peripherals and workspace hardware, described in plain language
@@ -181,7 +181,7 @@ function Hero({ departments }: { departments: number }) {
               <Button
                 size="lg"
                 variant="secondary"
-                className="border-paper/25 bg-transparent text-paper hover:border-paper hover:bg-paper/10"
+                className="border-panel-ink/25 bg-transparent text-panel-ink hover:border-panel-ink hover:bg-panel-ink/10"
               >
                 Only what is in stock
               </Button>
@@ -203,18 +203,18 @@ function Hero({ departments }: { departments: number }) {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="flex items-baseline justify-between gap-4 border-t border-paper/12 py-4 first:border-t-0"
+              className="flex items-baseline justify-between gap-4 border-t border-panel-ink/12 py-4 first:border-t-0"
             >
               <div>
-                <dt className="eyebrow label-narrow text-paper/45">{stat.label}</dt>
-                <dd className="tabular mt-1.5 text-3xl leading-none font-bold text-paper">
+                <dt className="eyebrow label-narrow text-panel-ink/45">{stat.label}</dt>
+                <dd className="tabular mt-1.5 text-3xl leading-none font-bold text-panel-ink">
                   {stat.value}
                   {stat.unit && (
-                    <span className="ml-0.5 text-sm font-medium text-paper/45">{stat.unit}</span>
+                    <span className="ml-0.5 text-sm font-medium text-panel-ink/45">{stat.unit}</span>
                   )}
                 </dd>
               </div>
-              <span className="eyebrow label-narrow text-paper/30">{stat.note}</span>
+              <span className="eyebrow label-narrow text-panel-ink/30">{stat.note}</span>
             </div>
           ))}
         </dl>
@@ -301,10 +301,10 @@ function DepartmentIndex({ categories }: { categories: CategoryWithCount[] }) {
 /** Closing statement, on the same lit panel as the hero so the page bookends. */
 function StockPanel() {
   return (
-    <section className="graticule grain relative mt-16 overflow-hidden border-t border-hairline bg-panel text-paper">
+    <section className="graticule grain relative mt-16 overflow-hidden border-t border-hairline bg-panel text-panel-ink">
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-8">
         <div className="lg:col-span-5">
-          <p className="eyebrow label-narrow text-paper/45">Why shop here</p>
+          <p className="eyebrow label-narrow text-panel-ink/45">Why shop here</p>
           <h2 className="display-wide mt-3 text-3xl leading-[1.02] font-extrabold sm:text-[2.75rem]">
             Stock counts
             <br />
@@ -313,7 +313,7 @@ function StockPanel() {
         </div>
 
         <div className="lg:col-span-6 lg:col-start-7">
-          <p className="max-w-xl text-base leading-relaxed text-paper/65">
+          <p className="max-w-xl text-base leading-relaxed text-panel-ink/65">
             Every listing shows what is genuinely on the shelf. If two people reach for the last
             unit at the same moment, only one order goes through, and the other person is told
             immediately rather than a week later.
@@ -326,7 +326,7 @@ function StockPanel() {
               <Button
                 size="lg"
                 variant="secondary"
-                className="border-paper/25 bg-transparent text-paper hover:border-paper hover:bg-paper/10"
+                className="border-panel-ink/25 bg-transparent text-panel-ink hover:border-panel-ink hover:bg-panel-ink/10"
               >
                 Create an account
               </Button>
