@@ -49,14 +49,19 @@ CATEGORIES: list[tuple[str, str]] = [
 # the grid never breaks.
 _CDN = "https://cdn.dummyjson.com/product-images"
 
+# Prices are each product's original launch MSRP in USD (or slightly under
+# it), not today's street or resale value. Most of this hardware is
+# discontinued, so there is no current retail price to track; launch MSRP is
+# the one figure that is real and checkable. Reprice before any real use.
+#
 # (name, category, price, stock, description, image_url)
 PRODUCTS: list[tuple[str, str, str, int, str, str]] = [
     # --- Electronics ---
-    ("Apple AirPods Max Silver", "Electronics", "549.99", 59,
+    ("Apple AirPods Max Silver", "Electronics", "549.00", 59,
      "Over-ear headphones with adaptive noise cancellation and a case that "
      "actually protects them. Twenty hours on a charge.",
      f"{_CDN}/mobile-accessories/apple-airpods-max-silver/1.webp"),
-    ("Apple AirPods", "Electronics", "129.99", 67,
+    ("Apple AirPods", "Electronics", "129.00", 67,
      "True-wireless earbuds with a charging case that survives a day of "
      "meetings and still has room left.",
      f"{_CDN}/mobile-accessories/apple-airpods/1.webp"),
@@ -64,15 +69,15 @@ PRODUCTS: list[tuple[str, str, str, int, str, str]] = [
      "Neckband earphones with magnetic buds that pause playback the moment you "
      "unclip them.",
      f"{_CDN}/mobile-accessories/beats-flex-wireless-earphones/1.webp"),
-    ("Apple Watch Series 4 Gold", "Electronics", "349.99", 33,
+    ("Apple Watch Series 4 Gold", "Electronics", "399.00", 33,
      "Always-on display, GPS and continuous heart-rate tracking, with a battery "
      "that lasts past bedtime.",
      f"{_CDN}/mobile-accessories/apple-watch-series-4-gold/1.webp"),
-    ("Amazon Echo Plus", "Electronics", "99.99", 61,
+    ("Amazon Echo Plus", "Electronics", "149.99", 61,
      "Smart speaker with a built-in hub, so lights and plugs pair without a "
      "second bridge cluttering the shelf.",
      f"{_CDN}/mobile-accessories/amazon-echo-plus/1.webp"),
-    ("Apple HomePod Mini Cosmic Grey", "Electronics", "99.99", 27,
+    ("Apple HomePod Mini Cosmic Grey", "Electronics", "99.00", 27,
      "Pocket-sized speaker with surprisingly honest mids and room-sensing "
      "playback.",
      f"{_CDN}/mobile-accessories/apple-homepod-mini-cosmic-grey/1.webp"),
@@ -82,66 +87,66 @@ PRODUCTS: list[tuple[str, str, str, int, str, str]] = [
      f"{_CDN}/mobile-accessories/tv-studio-camera-pedestal/1.webp"),
 
     # --- Laptops ---
-    ("Apple MacBook Pro 14 Inch Space Grey", "Laptops", "1999.99", 24,
+    ("Apple MacBook Pro 14 Inch Space Grey", "Laptops", "1999.00", 24,
      "14-inch display, machined aluminium chassis, and a battery that genuinely "
      "lasts a working day.",
      f"{_CDN}/laptops/apple-macbook-pro-14-inch-space-grey/1.webp"),
-    ("Asus Zenbook Pro Dual Screen Laptop", "Laptops", "1799.99", 45,
+    ("Asus Zenbook Pro Dual Screen Laptop", "Laptops", "2499.00", 45,
      "A second display above the keyboard for timelines and tool palettes, plus "
      "a discrete GPU for rendering.",
      f"{_CDN}/laptops/asus-zenbook-pro-dual-screen-laptop/1.webp"),
-    ("New DELL XPS 13 9300 Laptop", "Laptops", "1499.99", 74,
+    ("New DELL XPS 13 9300 Laptop", "Laptops", "999.00", 74,
      "A near-borderless 13-inch screen in a chassis small enough for a tray "
      "table.",
      f"{_CDN}/laptops/new-dell-xps-13-9300-laptop/1.webp"),
-    ("Huawei Matebook X Pro", "Laptops", "1399.99", 75,
+    ("Huawei Matebook X Pro", "Laptops", "1199.00", 75,
      "Fanless ultraportable with a 3:2 panel that shows more of a document than "
      "a widescreen does.",
      f"{_CDN}/laptops/huawei-matebook-x-pro/1.webp"),
-    ("Lenovo Yoga 920", "Laptops", "1099.99", 40,
+    ("Lenovo Yoga 920", "Laptops", "1329.00", 40,
      "Converts to a tablet through 360 degrees, on a hinge rated for the abuse "
      "that implies.",
      f"{_CDN}/laptops/lenovo-yoga-920/1.webp"),
 
     # --- Smartphones ---
-    ("iPhone 13 Pro", "Smartphones", "1099.99", 56,
+    ("iPhone 13 Pro", "Smartphones", "999.00", 56,
      "Triple camera system and a ProMotion display, built well enough to still "
      "be worth using in four years.",
      f"{_CDN}/smartphones/iphone-13-pro/1.webp"),
-    ("iPhone X", "Smartphones", "899.99", 37,
+    ("iPhone X", "Smartphones", "999.00", 37,
      "The edge-to-edge design that set the template for everything after it. "
      "Still a capable handset.",
      f"{_CDN}/smartphones/iphone-x/1.webp"),
-    ("Samsung Galaxy S10", "Smartphones", "699.99", 19,
+    ("Samsung Galaxy S10", "Smartphones", "899.00", 19,
      "Flagship chip, expandable storage and a headphone jack, which is rarer "
      "than it should be.",
      f"{_CDN}/smartphones/samsung-galaxy-s10/1.webp"),
-    ("Samsung Galaxy S8", "Smartphones", "499.99", 0,
+    ("Samsung Galaxy S8", "Smartphones", "719.99", 0,
      "Curved display in a body narrow enough for one hand. Currently out of "
      "stock.",
      f"{_CDN}/smartphones/samsung-galaxy-s8/1.webp"),
-    ("Vivo X21", "Smartphones", "499.99", 7,
+    ("Vivo X21", "Smartphones", "479.00", 7,
      "In-display fingerprint reader and an AMOLED panel that stays readable "
      "outdoors.",
      f"{_CDN}/smartphones/vivo-x21/1.webp"),
-    ("Oppo F19 Pro Plus", "Smartphones", "399.99", 78,
+    ("Oppo F19 Pro Plus", "Smartphones", "339.00", 78,
      "Mid-range handset with fast charging that takes it from empty to usable "
      "over a coffee.",
      f"{_CDN}/smartphones/oppo-f19-pro-plus/1.webp"),
-    ("Realme XT", "Smartphones", "349.99", 80,
+    ("Realme XT", "Smartphones", "225.00", 80,
      "Large sensor, larger battery, and a price that leaves room for a case.",
      f"{_CDN}/smartphones/realme-xt/1.webp"),
-    ("Realme C35", "Smartphones", "149.99", 48,
+    ("Realme C35", "Smartphones", "159.00", 48,
      "Entry-level handset with a battery that genuinely lasts two days of light "
      "use.",
      f"{_CDN}/smartphones/realme-c35/1.webp"),
 
     # --- Tablets ---
-    ("Samsung Galaxy Tab S8 Plus Grey", "Tablets", "599.99", 62,
+    ("Samsung Galaxy Tab S8 Plus Grey", "Tablets", "899.99", 62,
      "Large AMOLED slate with a pen in the box and a keyboard cover worth "
      "buying.",
      f"{_CDN}/tablets/samsung-galaxy-tab-s8-plus-grey/1.webp"),
-    ("iPad Mini 2021 Starlight", "Tablets", "499.99", 47,
+    ("iPad Mini 2021 Starlight", "Tablets", "499.00", 47,
      "Small enough to hold one-handed for an hour, fast enough to edit on.",
      f"{_CDN}/tablets/ipad-mini-2021-starlight/1.webp"),
     ("Samsung Galaxy Tab White", "Tablets", "349.99", 92,
@@ -149,18 +154,15 @@ PRODUCTS: list[tuple[str, str, str, int, str, str]] = [
      f"{_CDN}/tablets/samsung-galaxy-tab-white/1.webp"),
 
     # --- Accessories ---
-    ("Apple MagSafe Battery Pack", "Accessories", "99.99", 1,
+    ("Apple MagSafe Battery Pack", "Accessories", "99.00", 1,
      "Snaps on magnetically and tops a phone back up without a cable trailing "
      "off the desk.",
      f"{_CDN}/mobile-accessories/apple-magsafe-battery-pack/1.webp"),
-    ("Apple Airpower Wireless Charger", "Accessories", "79.99", 1,
-     "Charges a phone, a watch and earbuds from one mat, in any orientation.",
-     f"{_CDN}/mobile-accessories/apple-airpower-wireless-charger/1.webp"),
-    ("iPhone 12 Silicone Case with MagSafe Plum", "Accessories", "29.99", 69,
+    ("iPhone 12 Silicone Case with MagSafe Plum", "Accessories", "49.00", 69,
      "Soft-touch silicone with a microfibre lining and magnets aligned for the "
      "charger.",
      f"{_CDN}/mobile-accessories/iphone-12-silicone-case-with-magsafe-plum/1.webp"),
-    ("Apple iPhone Charger", "Accessories", "19.99", 31,
+    ("Apple iPhone Charger", "Accessories", "19.00", 31,
      "The plug you will eventually need a second of. Keep one in the bag.",
      f"{_CDN}/mobile-accessories/apple-iphone-charger/1.webp"),
     ("Monopod", "Accessories", "19.99", 48,
@@ -176,7 +178,7 @@ PRODUCTS: list[tuple[str, str, str, int, str, str]] = [
      f"{_CDN}/mobile-accessories/selfie-stick-monopod/1.webp"),
 
     # --- Home & Office ---
-    ("Knoll Saarinen Executive Conference Chair", "Home & Office", "499.99", 26,
+    ("Knoll Saarinen Executive Conference Chair", "Home & Office", "2899.00", 26,
      "A real lumbar shape rather than a padded rectangle, rated for full "
      "working days.",
      f"{_CDN}/furniture/knoll-saarinen-executive-conference-chair/1.webp"),
