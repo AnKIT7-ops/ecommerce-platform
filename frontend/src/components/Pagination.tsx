@@ -30,7 +30,7 @@ export function Pagination({ page, pages, onChange }: PaginationProps) {
         type="button"
         onClick={() => onChange(page - 1)}
         disabled={page <= 1}
-        className="h-9 rounded-[6px] border border-hairline bg-paper px-3 text-sm font-medium transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-9 rounded-[6px] border border-hairline bg-paper px-3 text-sm font-medium transition hover:border-ink active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Previous
       </button>
@@ -48,7 +48,7 @@ export function Pagination({ page, pages, onChange }: PaginationProps) {
             aria-current={entry === page ? "page" : undefined}
             aria-label={`Page ${entry}`}
             className={[
-              "tabular h-9 min-w-9 rounded-[6px] border px-2 text-sm transition-colors",
+              "tabular h-9 min-w-9 rounded-[6px] border px-2 text-sm transition active:scale-95",
               entry === page
                 ? "border-volt bg-volt font-semibold text-white"
                 : "border-hairline bg-paper hover:border-ink",
@@ -63,7 +63,7 @@ export function Pagination({ page, pages, onChange }: PaginationProps) {
         type="button"
         onClick={() => onChange(page + 1)}
         disabled={page >= pages}
-        className="h-9 rounded-[6px] border border-hairline bg-paper px-3 text-sm font-medium transition-colors hover:border-ink disabled:cursor-not-allowed disabled:opacity-40"
+        className="h-9 rounded-[6px] border border-hairline bg-paper px-3 text-sm font-medium transition hover:border-ink active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
       >
         Next
       </button>

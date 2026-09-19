@@ -223,7 +223,7 @@ export function ProductDetailPage() {
 
           <div aria-live="polite" className="mt-4 empty:mt-0">
             {didAdd && (
-              <div className="flex flex-wrap items-center gap-3 rounded-[6px] border border-good/25 bg-good-tint px-4 py-3">
+              <div className="enter-fade-down flex flex-wrap items-center gap-3 rounded-[6px] border border-good/25 bg-good-tint px-4 py-3">
                 <p className="text-sm font-medium text-good">
                   Added {quantity} to your cart.
                 </p>

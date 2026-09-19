@@ -35,6 +35,10 @@
 
   --radius-card: 6px;
 
+  /* The store's one motion curve. Was duplicated as a literal in .reveal and
+     .trace-sweep; everything that moves now shares it. */
+  --ease-instrument: cubic-bezier(0.22, 0.68, 0.26, 1);
+
   /* Instrument surfaces: the hero and closing panel read as a lit readout
      rather than a flat dark block. */
   --color-panel: #0a0e13;
@@ -125,6 +129,83 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-muted);
+  }
+
+  /* Entrance for content that would otherwise teleport in. @starting-style
+     gives a mount transition with no JS and no mounted-state flag. */
+  .enter-fade-down {
+    transition:
+      opacity 200ms var(--ease-instrument),
+      transform 200ms var(--ease-instrument);
+  }
+  @starting-style {
+    .enter-fade-down {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Mobile menu. `display` is transitioned with allow-discrete so the panel
+     animates OUT as well as in, without keeping a dead node mounted. */
+  .disclosure {
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 200ms var(--ease-instrument),
+      transform 200ms var(--ease-instrument),
+      display 200ms allow-discrete;
+  }
+
+  .disclosure-open {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    .disclosure-open {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Cart badge acknowledging an item landing. Fires on increase only. */
+  .badge-pop {
+    animation: badge-pop 220ms var(--ease-instrument);
+  }
+
+  @keyframes badge-pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Order confirmation. The one place in the store with a delight budget - a
+     customer sees this a handful of times ever, so it gets a little overshoot. */
+  .place-in {
+    animation: place-in 320ms var(--ease-instrument) both;
+  }
+
+  @keyframes place-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.008);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   .line-clamp-2 {
@@ -219,7 +300,7 @@
 
   /* One orchestrated load: everything rises on a stagger set per element. */
   .reveal {
-    animation: reveal-up 760ms cubic-bezier(0.22, 0.68, 0.26, 1) backwards;
+    animation: reveal-up 760ms var(--ease-instrument) backwards;
   }
 
   @keyframes reveal-up {
@@ -238,7 +319,7 @@
     background-image: linear-gradient(to right, var(--color-volt-tint), transparent);
     background-size: 0% 100%;
     background-repeat: no-repeat;
-    transition: background-size 420ms cubic-bezier(0.22, 0.68, 0.26, 1);
+    transition: background-size 420ms var(--ease-instrument);
   }
   .group:hover .trace-sweep,
   .group:focus-within .trace-sweep {
@@ -253,13 +334,51 @@
   }
 }
 
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  /*
+    Gentler, not gone. Movement is what provokes vestibular symptoms; opacity
+    is not. So cross-fades survive at a short duration to keep state changes
+    legible, while anything that travels, scales or bounces is neutralised.
+    Flattening everything to 0.01ms - the usual reflex - throws away the fades
+    that make a change comprehensible along with the motion that hurts.
+  */
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 180ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 180ms !important;
     scroll-behavior: auto !important;
+  }
+
+  /* Entrances keep the fade and lose the travel. */
+  .reveal,
+  .place-in {
+    animation-name: reveal-fade !important;
+  }
+
+  .enter-fade-down,
+  .disclosure,
+  .disclosure-open,
+  .place-in {
+    transform: none !important;
+  }
+
+  /* Press feedback and the badge pop are pure transform - drop them. */
+  .badge-pop {
+    animation: none !important;
+  }
+
+  *:active {
+    transform: none !important;
   }
 }

@@ -17,7 +17,7 @@ export function QuantitySelector({
   const clamp = (next: number) => Math.min(Math.max(next, 1), Math.max(max, 1));
 
   const stepClass =
-    "flex h-9 w-9 items-center justify-center text-lg leading-none text-ink transition-colors hover:bg-shell disabled:cursor-not-allowed disabled:opacity-40";
+    "flex h-9 w-9 items-center justify-center text-lg leading-none text-ink transition hover:bg-shell active:scale-95 disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <div className="inline-flex items-center rounded-[6px] border border-hairline bg-paper">

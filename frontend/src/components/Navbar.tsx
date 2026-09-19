@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../hooks/useAuth";
@@ -102,22 +102,37 @@ export function Navbar({ categories }: NavbarProps) {
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             className="flex h-10 w-10 items-center justify-center rounded-[6px] hover:bg-shell"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
-              {isMenuOpen ? (
-                <path
-                  d="M6 6l12 12M18 6L6 18"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              ) : (
-                <path
-                  d="M4 7h16M4 12h16M4 17h16"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                />
-              )}
+            {/* Three persistent bars rather than two swapped paths: the
+                control stays continuous, so it morphs instead of blinking.
+                transform-origin is the viewBox centre, so translating a bar to
+                y=12 first puts it on the rotation axis. */}
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            >
+              <path
+                d="M4 7h16"
+                className={`origin-center transition-transform duration-200 ease-[var(--ease-instrument)] ${
+                  isMenuOpen ? "translate-y-[5px] rotate-45" : ""
+                }`}
+              />
+              <path
+                d="M4 12h16"
+                className={`transition-opacity duration-200 ${
+                  isMenuOpen ? "opacity-0" : "opacity-100"
+                }`}
+              />
+              <path
+                d="M4 17h16"
+                className={`origin-center transition-transform duration-200 ease-[var(--ease-instrument)] ${
+                  isMenuOpen ? "-translate-y-[5px] -rotate-45" : ""
+                }`}
+              />
             </svg>
           </button>
         </div>
@@ -138,8 +153,15 @@ export function Navbar({ categories }: NavbarProps) {
         </div>
       </div>
 
-      {isMenuOpen && (
-        <div id="mobile-menu" className="border-t border-hairline bg-paper md:hidden">
+      {/* Kept mounted so it animates out as well as in. The md:hidden guard
+          lives on the wrapper, because .disclosure drives `display` itself. */}
+      <div className="md:hidden">
+        <div
+          id="mobile-menu"
+          className={`disclosure border-t border-hairline bg-paper ${
+            isMenuOpen ? "disclosure-open" : ""
+          }`}
+        >
           <div className="space-y-4 px-4 py-4">
             <SearchBar value={searchValue} onChange={() => undefined} onSubmit={runSearch} />
 
@@ -181,7 +203,7 @@ export function Navbar({ categories }: NavbarProps) {
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {user?.role === "admin" && (
         <p className="bg-ink px-4 py-1.5 text-center text-xs font-medium text-paper">
@@ -222,6 +244,22 @@ function MobileLink({ to, children }: { to: string; children: string }) {
 }
 
 function CartLink({ count }: { count: number }) {
+  // Pop only when the count goes UP. Keying the animation off every change
+  // would fire it on first load, when the cart arrives from the server, and
+  // on removal - neither of which is an item landing in the cart.
+  const previousCount = useRef(count);
+  const [didGain, setDidGain] = useState(false);
+
+  useEffect(() => {
+    const gained = count > previousCount.current;
+    previousCount.current = count;
+    if (!gained) return;
+
+    setDidGain(true);
+    const timer = window.setTimeout(() => setDidGain(false), 260);
+    return () => window.clearTimeout(timer);
+  }, [count]);
+
   return (
     <NavLink
       to="/cart"
@@ -240,7 +278,11 @@ function CartLink({ count }: { count: number }) {
         <circle cx="17" cy="20" r="1.4" fill="currentColor" />
       </svg>
       {count > 0 && (
-        <span className="tabular absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-volt px-1 text-[10px] font-bold text-white">
+        <span
+          className={`tabular absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-volt px-1 text-[10px] font-bold text-white ${
+            didGain ? "badge-pop" : ""
+          }`}
+        >
           {count > 99 ? "99+" : count}
         </span>
       )}

@@ -100,7 +100,7 @@ export function OrderDetailPage() {
       {justPlaced && (
         <div
           role="status"
-          className="mb-8 rounded-[6px] border border-good/25 bg-good-tint px-5 py-4"
+          className="place-in mb-8 rounded-[6px] border border-good/25 bg-good-tint px-5 py-4"
         >
           <p className="font-semibold text-good">Order placed</p>
           <p className="mt-1 text-sm text-muted">
