@@ -74,7 +74,8 @@ and models own the schema. Pydantic schemas are the contract at the edge: nothin
 reaches a client except through a declared response type.
 
 More detail in [`docs/architecture.md`](docs/architecture.md); the reasoning behind
-specific choices is logged in [`docs/decisions.md`](docs/decisions.md).
+specific choices is logged in [`docs/decisions.md`](docs/decisions.md), and what each
+engineering audit checked and changed is in [`docs/audit.md`](docs/audit.md).
 
 ## Technology stack
 
@@ -476,6 +477,7 @@ ecommerce-platform/
 ├── docs/
 │   ├── api.md                      # endpoint reference
 │   ├── architecture.md             # system design
+│   ├── audit.md                    # point-in-time audit log
 │   ├── decisions.md                # decision log
 │   └── requirements.md
 ├── infrastructure/                 # (empty — AWS work not started)
