@@ -279,7 +279,7 @@ function CartLink({ count }: { count: number }) {
       </svg>
       {count > 0 && (
         <span
-          className={`tabular absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-volt px-1 text-[10px] font-bold text-white ${
+          className={`tabular absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-volt px-1 text-[10px] font-bold text-volt-ink ${
             didGain ? "badge-pop" : ""
           }`}
         >

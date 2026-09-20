@@ -50,7 +50,7 @@ export function Pagination({ page, pages, onChange }: PaginationProps) {
             className={[
               "tabular h-9 min-w-9 rounded-[6px] border px-2 text-sm transition active:scale-95",
               entry === page
-                ? "border-volt bg-volt font-semibold text-white"
+                ? "border-volt bg-volt font-semibold text-volt-ink"
                 : "border-hairline bg-paper hover:border-ink",
             ].join(" ")}
           >

@@ -154,5 +154,7 @@ PHASE 10 Production hardening
 
 Phase 3 onwards is deliberately untouched. The application is structured to make
 that move straightforward: all configuration comes from the environment, the schema
-is migration-driven, and the frontend talks to the backend only through
-`VITE_API_URL`.
+is migration-driven, and the frontend's backend address is a single build-time
+variable (`VITE_API_URL`). In development that variable is empty and the Vite dev
+server proxies `/api` to the backend, so the two are same-origin; a production
+build has no proxy and must set it explicitly.

@@ -54,7 +54,10 @@ export function OrderDetailPage() {
               : "Could not load this order.",
         );
       } finally {
-        setIsLoading(false);
+        // An aborted request was superseded, not finished. Clearing the flag
+        // here would drop the skeleton while the data is still null, flashing
+        // the empty state before the replacement response lands.
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }
 
@@ -135,7 +138,7 @@ export function OrderDetailPage() {
                 aria-current={index === currentStep ? "step" : undefined}
               >
                 <span
-                  className={`eyebrow block ${isDone ? "text-volt-dark" : "text-muted/60"}`}
+                  className={`eyebrow block ${isDone ? "text-volt-dark" : "text-muted"}`}
                 >
                   {step}
                 </span>

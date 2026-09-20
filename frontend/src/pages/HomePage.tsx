@@ -50,7 +50,10 @@ export function HomePage() {
         if (caught instanceof DOMException && caught.name === "AbortError") return;
         setError(caught instanceof Error ? caught.message : "Could not load products.");
       } finally {
-        setIsLoading(false);
+        // An aborted request was superseded, not finished. Clearing the flag
+        // here would drop the skeleton while the data is still null, flashing
+        // the empty state before the replacement response lands.
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }
 
@@ -156,8 +159,8 @@ function Hero({ departments }: { departments: number }) {
               the spec sheet.
               <span
                 aria-hidden
-                className="absolute -bottom-2 left-0 h-[3px] w-full bg-volt"
-                style={{ animation: "reveal-up 900ms 620ms backwards" }}
+                className="reveal absolute -bottom-2 left-0 h-[3px] w-full bg-volt"
+                style={{ animationDelay: "620ms" }}
               />
             </span>
           </h1>
@@ -206,15 +209,15 @@ function Hero({ departments }: { departments: number }) {
               className="flex items-baseline justify-between gap-4 border-t border-panel-ink/12 py-4 first:border-t-0"
             >
               <div>
-                <dt className="eyebrow label-narrow text-panel-ink/45">{stat.label}</dt>
+                <dt className="eyebrow label-narrow text-panel-ink/60">{stat.label}</dt>
                 <dd className="tabular mt-1.5 text-3xl leading-none font-bold text-panel-ink">
                   {stat.value}
                   {stat.unit && (
-                    <span className="ml-0.5 text-sm font-medium text-panel-ink/45">{stat.unit}</span>
+                    <span className="ml-0.5 text-sm font-medium text-panel-ink/60">{stat.unit}</span>
                   )}
                 </dd>
               </div>
-              <span className="eyebrow label-narrow text-panel-ink/30">{stat.note}</span>
+              <span className="eyebrow label-narrow text-panel-ink/60">{stat.note}</span>
             </div>
           ))}
         </dl>
@@ -257,7 +260,7 @@ function DepartmentIndex({ categories }: { categories: CategoryWithCount[] }) {
               to={`/products?category=${category.slug}`}
               className="trace-sweep flex items-center gap-4 border-b border-hairline py-4 pr-2 pl-3 sm:gap-6 sm:pl-4"
             >
-              <span className="eyebrow label-narrow w-7 shrink-0 text-muted/70">
+              <span className="eyebrow label-narrow w-7 shrink-0 text-muted">
                 {String(position + 1).padStart(2, "0")}
               </span>
 
@@ -304,7 +307,7 @@ function StockPanel() {
     <section className="graticule grain relative mt-16 overflow-hidden border-t border-hairline bg-panel text-panel-ink">
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-12 lg:px-8">
         <div className="lg:col-span-5">
-          <p className="eyebrow label-narrow text-panel-ink/45">Why shop here</p>
+          <p className="eyebrow label-narrow text-panel-ink/60">Why shop here</p>
           <h2 className="display-wide mt-3 text-3xl leading-[1.02] font-extrabold sm:text-[2.75rem]">
             Stock counts
             <br />

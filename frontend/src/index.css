@@ -19,6 +19,10 @@
 
   /* One decisive action colour. Everything else stays quiet. */
   --color-volt: #0b5fff;
+  /* Foreground for anything sitting ON volt. A literal white does not take
+     part in the theme, and volt lifts in dark mode to hold its own contrast
+     against dark surfaces - which drops white text below AA. */
+  --color-volt-ink: #ffffff;
   --color-volt-dark: #0848c4;
   /* Primary-button hover. Must stay darker than volt so white text holds. */
   --color-volt-hover: #0848c4;
@@ -44,7 +48,6 @@
   /* Instrument surfaces: the hero and closing panel read as a lit readout
      rather than a flat dark block. */
   --color-panel: #0a0e13;
-  --color-trace: #1c242e;
 
   /* Panels are dark in BOTH themes, so their foreground is a constant. Using
      --color-paper here would invert with the theme and leave dark-on-dark. */
@@ -70,6 +73,7 @@
   /* Volt is lifted slightly; volt-dark is a text colour on tinted chips, so on
      a dark surface it has to become lighter, not darker. */
   --color-volt: #3d7dff;
+  --color-volt-ink: #071022;
   --color-volt-dark: #a6c6ff;
   --color-volt-hover: #2b64d6;
   --color-volt-tint: #14203a;
@@ -264,9 +268,10 @@
     letter-spacing: -0.03em;
   }
 
+  /* Width axis only. It previously also set letter-spacing, which overrode
+     .eyebrow's wider small-caps tracking wherever the two were combined. */
   .label-narrow {
     font-variation-settings: "wdth" 78;
-    letter-spacing: 0.02em;
   }
 
   /* Crosshair registration marks on the specimen cards. */
@@ -348,39 +353,55 @@
 @media (prefers-reduced-motion: reduce) {
   /*
     Gentler, not gone. Movement is what provokes vestibular symptoms; opacity
-    is not. So cross-fades survive at a short duration to keep state changes
-    legible, while anything that travels, scales or bounces is neutralised.
-    Flattening everything to 0.01ms - the usual reflex - throws away the fades
-    that make a change comprehensible along with the motion that hurts.
+    is not. Rather than blanking transforms - which would also un-centre the
+    statically positioned search icon - this restricts what may *animate*. A
+    transform driven by hover or state still applies, it just applies
+    instantly, so nothing travels and no layout shifts.
   */
   *,
   *::before,
   *::after {
+    transition-property: opacity, display !important;
+    transition-duration: 180ms !important;
     animation-duration: 180ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 180ms !important;
     scroll-behavior: auto !important;
   }
 
-  /* Entrances keep the fade and lose the travel. */
+  /* Keyframes that travel keep the fade and lose the movement. */
   .reveal,
   .place-in {
     animation-name: reveal-fade !important;
   }
 
-  .enter-fade-down,
-  .disclosure,
-  .disclosure-open,
-  .place-in {
-    transform: none !important;
-  }
-
-  /* Press feedback and the badge pop are pure transform - drop them. */
   .badge-pop {
     animation: none !important;
   }
 
-  *:active {
-    transform: none !important;
+  /*
+    Tailwind v4 emits the independent `scale` / `translate` / `rotate`
+    properties, not `transform`, so a `transform: none` rule here would do
+    nothing at all.
+
+    `scale` is suppressed outright: the only uses are decorative (press
+    feedback and the product image zoom), and a sudden size change is the
+    thing to avoid. `translate` and `rotate` are deliberately left alone -
+    they carry position and state here, not motion. The search icon is
+    centred with a translate, and the theme toggle's thumb position IS its
+    state; blanking either would break the control rather than calm it. With
+    transitions restricted to opacity above, they change instantly, so
+    nothing travels.
+  */
+  *,
+  *::before,
+  *::after {
+    scale: none !important;
+  }
+
+  /* A spinner that does one fast rotation and freezes reads as a broken
+     control, not a calm one. */
+  .animate-spin {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
   }
 }

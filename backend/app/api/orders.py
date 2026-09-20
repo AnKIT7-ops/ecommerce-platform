@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Path, Query, status
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import selectinload
 
 from app.dependencies import AdminDep, CurrentUserDep, DbDep
@@ -98,22 +98,49 @@ def get_order(
 def cancel_order(
     order_id: Annotated[int, Path(ge=1)], current_user: CurrentUserDep, db: DbDep
 ) -> OrderRead:
-    """Cancel an order and return its stock to the catalogue."""
+    """Cancel an order and return its stock to the catalogue.
+
+    Claiming the cancellation comes first, and it is a conditional UPDATE rather
+    than a read-then-write: two clicks on "cancel this order" arriving together
+    would otherwise both pass the status check and both restock, crediting the
+    catalogue twice for one order.
+    """
     order = _owned_order_or_404(db, order_id, current_user.id, current_user.is_admin)
 
-    if OrderStatus.CANCELLED not in ORDER_STATUS_TRANSITIONS[order.status]:
+    cancellable = [
+        state
+        for state, allowed in ORDER_STATUS_TRANSITIONS.items()
+        if OrderStatus.CANCELLED in allowed
+    ]
+    if order.status not in cancellable:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
             f"An order with status {order.status.value} can no longer be cancelled",
         )
 
-    # Restock in product_id order - same deadlock-avoidance rule as checkout.
-    for item in sorted(order.items, key=lambda i: i.product_id):
-        product = db.get(Product, item.product_id)
-        if product is not None:
-            product.stock_quantity += item.quantity
+    claimed = db.execute(
+        update(Order)
+        .where(Order.id == order.id, Order.status.in_(cancellable))
+        .values(status=OrderStatus.CANCELLED)
+        .execution_options(synchronize_session=False)
+    )
+    if claimed.rowcount == 0:
+        # Someone else cancelled or advanced it between the read and here.
+        db.rollback()
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "This order has already been cancelled or dispatched"
+        )
 
-    order.status = OrderStatus.CANCELLED
+    # Restock in product_id order - same deadlock-avoidance rule as checkout - and
+    # as a relative UPDATE, so a concurrent decrement is not clobbered.
+    for item in sorted(order.items, key=lambda i: i.product_id):
+        db.execute(
+            update(Product)
+            .where(Product.id == item.product_id)
+            .values(stock_quantity=Product.stock_quantity + item.quantity)
+            .execution_options(synchronize_session=False)
+        )
+
     db.commit()
     db.refresh(order)
     return OrderRead.model_validate(order)

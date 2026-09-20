@@ -15,7 +15,6 @@ from pydantic import (
 from app.core.security import BCRYPT_MAX_BYTES
 from app.models.user import UserRole
 
-
 # A bare ``min_length=1`` counts characters, so "   " would pass and store a
 # blank-looking name. Stripping first means whitespace-only input fails.
 FullName = Annotated[
@@ -65,6 +64,7 @@ class UserRead(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    # Required when present. The column stays nullable for accounts created
-    # before the name was mandatory, so UserRead still tolerates None.
-    full_name: FullName
+    # Optional so PATCH stays a partial update - omitting the field is a no-op,
+    # not a 422. When it IS supplied it must be a real name, so the FullName
+    # rules still apply and "   " is rejected.
+    full_name: FullName | None = None

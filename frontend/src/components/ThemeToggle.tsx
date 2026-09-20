@@ -51,7 +51,7 @@ function Face({
   return (
     <span
       className={`relative flex h-8 w-8 items-center justify-center rounded-[4px] transition-colors ${
-        active ? "text-panel-ink" : "text-muted group-hover:text-ink"
+        active ? "text-volt-ink" : "text-muted group-hover:text-ink"
       }`}
     >
       <svg

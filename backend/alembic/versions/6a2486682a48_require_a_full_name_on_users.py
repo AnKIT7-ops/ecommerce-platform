@@ -19,6 +19,10 @@ Blank and whitespace-only names are backfilled the same way. They satisfy a
 bare NOT NULL but are exactly the empty name the new schema rejects, so leaving
 them would keep the inconsistency this migration exists to remove.
 
+A local part made up only of separators (``_@example.com``) reduces to an empty
+string once they become spaces, which would reintroduce the very blank name
+this is meant to eliminate. Those rows fall back to ``Account <id>``.
+
 The downgrade restores nullability but cannot restore which rows were null:
 that information is overwritten by the backfill. Take a dump first if you need
 to reverse this on data you care about.
@@ -40,10 +44,16 @@ depends_on: Union[str, Sequence[str], None] = None
 _BACKFILL = sa.text(
     """
     UPDATE users
-    SET full_name = initcap(
-        btrim(
-            regexp_replace(split_part(email, '@', 1), '[._+-]+', ' ', 'g')
-        )
+    SET full_name = COALESCE(
+        NULLIF(
+            initcap(
+                btrim(
+                    regexp_replace(split_part(email, '@', 1), '[._+-]+', ' ', 'g')
+                )
+            ),
+            ''
+        ),
+        'Account ' || id
     )
     WHERE full_name IS NULL OR btrim(full_name) = ''
     """

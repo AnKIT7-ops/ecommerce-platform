@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
 
 interface SearchBarProps {
   value: string;
@@ -16,6 +16,10 @@ export function SearchBar({
   onSubmit,
   className = "",
 }: SearchBarProps) {
+  // Three SearchBars render at once (desktop header, mobile header, page
+  // filters). A hardcoded id made all three share one, so only the first got
+  // its label and the rest fell back to the placeholder for a name.
+  const inputId = useId();
   const [draft, setDraft] = useState(value);
   const [lastValue, setLastValue] = useState(value);
 
@@ -39,7 +43,7 @@ export function SearchBar({
 
   return (
     <form role="search" onSubmit={handleSubmit} className={`relative ${className}`}>
-      <label htmlFor="product-search" className="sr-only">
+      <label htmlFor={inputId} className="sr-only">
         Search products
       </label>
       <svg
@@ -52,7 +56,7 @@ export function SearchBar({
         <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
       <input
-        id="product-search"
+        id={inputId}
         type="search"
         value={draft}
         onChange={(event) => handleChange(event.target.value)}

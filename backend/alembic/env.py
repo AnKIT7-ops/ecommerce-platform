@@ -4,13 +4,12 @@ from logging.config import fileConfig
 
 from sqlalchemy import create_engine, pool
 
-from alembic import context
-from app.config import settings
-from app.database import Base
-
 # Importing the models package registers every model on Base.metadata, which is
 # what autogenerate compares the live database against.
 import app.models  # noqa: F401  (imported for side effects)
+from alembic import context
+from app.config import settings
+from app.database import Base
 
 config = context.config
 

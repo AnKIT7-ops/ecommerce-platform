@@ -40,7 +40,7 @@ export function PageHeader({
     >
       <div className="flex min-w-0 gap-4 sm:gap-6">
         {index && (
-          <span className="eyebrow label-narrow shrink-0 pt-1.5 text-muted/60">{index}</span>
+          <span className="eyebrow label-narrow shrink-0 pt-1.5 text-muted">{index}</span>
         )}
         <div className="min-w-0">
           <p className="eyebrow label-narrow">{eyebrow}</p>

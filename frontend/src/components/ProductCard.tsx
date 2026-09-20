@@ -25,11 +25,11 @@ export function ProductCard({ product, index }: ProductCardProps) {
   const stock = stockLabel(product.stock_quantity);
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-[6px] border border-hairline bg-paper transition-colors hover:border-ink/30">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[6px] border border-hairline bg-paper transition-colors hover:border-ink/30">
       <span aria-hidden className="crosshair" />
 
       <div className="flex items-center justify-between px-4 pt-3.5">
-        <span className="eyebrow label-narrow text-muted/70">
+        <span className="eyebrow label-narrow text-muted">
           {index === undefined
             ? `ITEM/${String(product.id).padStart(4, "0")}`
             : `SPEC/${String(index + 1).padStart(2, "0")}`}

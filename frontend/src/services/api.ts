@@ -8,7 +8,12 @@
 
 import type { TokenPair } from "../types";
 
-const API_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
+// Empty by default, NOT localhost. In dev the Vite proxy serves /api from
+// this same origin; in a production build an unset VITE_API_URL inlines as
+// `undefined`, and defaulting that to a localhost address would ship a bundle
+// pointing at the developer's machine — a failure only the user's browser
+// sees. Same-origin fails loudly instead.
+const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 const ACCESS_TOKEN_KEY = "ampere.access_token";
 const REFRESH_TOKEN_KEY = "ampere.refresh_token";

@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -48,6 +49,97 @@ def test_customer_cannot_create_a_category(
 ) -> None:
     response = client.post("/api/categories", json={"name": "Nope"}, headers=customer_headers)
     assert response.status_code == 403
+
+
+def test_category_reads_are_public(client: TestClient, category: Category) -> None:
+    assert client.get("/api/categories").status_code == 200
+    assert client.get(f"/api/categories/{category.id}").status_code == 200
+    assert client.get(f"/api/categories/slug/{category.slug}").status_code == 200
+
+
+#: Every write on the catalogue, as (method, path template, body).
+_CATALOGUE_WRITES = [
+    ("post", "/api/categories", {"name": "Sneaky"}),
+    ("put", "/api/categories/{category_id}", {"name": "Sneaky"}),
+    ("delete", "/api/categories/{category_id}", None),
+    ("post", "/api/products", {"name": "Sneaky", "price": "1.00"}),
+    ("put", "/api/products/{product_id}", {"price": "0.01"}),
+    ("delete", "/api/products/{product_id}", None),
+]
+
+
+def _call(
+    client: TestClient,
+    method: str,
+    path: str,
+    body: dict[str, str] | None,
+    headers: dict[str, str] | None,
+):
+    kwargs: dict[str, object] = {}
+    if body is not None:
+        kwargs["json"] = body
+    if headers is not None:
+        kwargs["headers"] = headers
+    return getattr(client, method)(path, **kwargs)
+
+
+@pytest.mark.parametrize(("method", "path", "body"), _CATALOGUE_WRITES)
+def test_anonymous_cannot_write_to_the_catalogue(
+    client: TestClient,
+    category: Category,
+    product: Product,
+    method: str,
+    path: str,
+    body: dict[str, str] | None,
+) -> None:
+    """No token at all is a 401, never a silent success."""
+    response = _call(
+        client, method, path.format(category_id=category.id, product_id=product.id), body, None
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(("method", "path", "body"), _CATALOGUE_WRITES)
+def test_customer_cannot_write_to_the_catalogue(
+    client: TestClient,
+    customer_headers: dict[str, str],
+    category: Category,
+    product: Product,
+    method: str,
+    path: str,
+    body: dict[str, str] | None,
+) -> None:
+    """A valid customer token authenticates but does not authorize: 403."""
+    response = _call(
+        client,
+        method,
+        path.format(category_id=category.id, product_id=product.id),
+        body,
+        customer_headers,
+    )
+    assert response.status_code == 403
+
+
+def test_admin_can_perform_every_category_write(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    """The positive half of the matrix: create, update and delete all succeed."""
+    created = client.post(
+        "/api/categories", json={"name": "Cabling"}, headers=admin_headers
+    )
+    assert created.status_code == 201
+    category_id = created.json()["id"]
+
+    updated = client.put(
+        f"/api/categories/{category_id}", json={"name": "Cables"}, headers=admin_headers
+    )
+    assert updated.status_code == 200
+    assert updated.json()["name"] == "Cables"
+
+    assert (
+        client.delete(f"/api/categories/{category_id}", headers=admin_headers).status_code == 200
+    )
+    assert client.get(f"/api/categories/{category_id}").status_code == 404
 
 
 # --- Categories -------------------------------------------------------------

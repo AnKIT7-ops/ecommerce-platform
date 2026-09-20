@@ -32,7 +32,10 @@ export function OrdersPage() {
         if (caught instanceof DOMException && caught.name === "AbortError") return;
         setError(caught instanceof Error ? caught.message : "Could not load your orders.");
       } finally {
-        setIsLoading(false);
+        // An aborted request was superseded, not finished. Clearing the flag
+        // here would drop the skeleton while the data is still null, flashing
+        // the empty state before the replacement response lands.
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     }
 

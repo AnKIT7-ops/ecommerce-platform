@@ -1,9 +1,13 @@
 """Registration, login, tokens and the current-user endpoint."""
 
+from datetime import datetime, timedelta, timezone
+
+import jwt
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.config import settings
 from app.models import User, UserRole
 from tests.conftest import CUSTOMER_EMAIL, CUSTOMER_PASSWORD
 
@@ -39,7 +43,12 @@ def test_register_never_grants_admin(client: TestClient, db_session: Session) ->
     """Role must not be settable through the public registration endpoint."""
     client.post(
         "/api/auth/register",
-        json={"email": "sneaky@example.com", "password": "averysafepw1", "full_name": "Sneaky User", "role": "admin"},
+        json={
+            "email": "sneaky@example.com",
+            "password": "averysafepw1",
+            "full_name": "Sneaky User",
+            "role": "admin",
+        },
     )
     user = db_session.execute(
         select(User).where(User.email == "sneaky@example.com")
@@ -58,6 +67,24 @@ def test_register_stores_a_hash_not_the_password(
 
     assert user.password_hash != "averysafepw1"
     assert user.password_hash.startswith("$2b$")
+
+
+def test_profile_update_allows_an_omitted_name(
+    client: TestClient, customer_headers: dict[str, str]
+) -> None:
+    """PATCH is a partial update: sending nothing is a no-op, not a 422."""
+    response = client.patch("/api/auth/me", json={}, headers=customer_headers)
+    assert response.status_code == 200
+    assert response.json()["full_name"] == "Test Customer"
+
+
+def test_profile_update_rejects_a_whitespace_only_name(
+    client: TestClient, customer_headers: dict[str, str]
+) -> None:
+    response = client.patch(
+        "/api/auth/me", json={"full_name": "   "}, headers=customer_headers
+    )
+    assert response.status_code == 422
 
 
 def test_register_requires_a_full_name(client: TestClient) -> None:
@@ -202,6 +229,42 @@ def test_me_requires_authentication(client: TestClient) -> None:
 
 def test_me_rejects_a_malformed_token(client: TestClient) -> None:
     response = client.get("/api/auth/me", headers={"Authorization": "Bearer not.a.jwt"})
+    assert response.status_code == 401
+
+
+def test_me_rejects_a_token_signed_with_another_key(
+    client: TestClient, customer_user: User
+) -> None:
+    """A well-formed token this server did not sign is still a 401.
+
+    Without signature verification anyone could mint a token for user id 1.
+    """
+    forged = jwt.encode(
+        {
+            "sub": str(customer_user.id),
+            "type": "access",
+            "exp": datetime.now(timezone.utc) + timedelta(minutes=30),
+        },
+        "not-the-real-signing-key-padded-past-32-bytes",
+        algorithm=settings.algorithm,
+    )
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {forged}"})
+    assert response.status_code == 401
+
+
+def test_me_rejects_an_expired_token(client: TestClient, customer_user: User) -> None:
+    """Correctly signed, correct type, but past its expiry."""
+    expired = jwt.encode(
+        {
+            "sub": str(customer_user.id),
+            "type": "access",
+            "iat": datetime.now(timezone.utc) - timedelta(hours=2),
+            "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+        },
+        settings.secret_key,
+        algorithm=settings.algorithm,
+    )
+    response = client.get("/api/auth/me", headers={"Authorization": f"Bearer {expired}"})
     assert response.status_code == 401
 
 
