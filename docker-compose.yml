@@ -1,4 +1,15 @@
 services:
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ecommerce-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend
@@ -15,16 +26,16 @@ services:
   postgres:
     image: postgres:16
     container_name: ecommerce-postgres
-    environment:
-      POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    # POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB live here so they can't
+    # drift from the backend's DATABASE_URL.
+    env_file:
+      - ./backend/.env
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_db"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 5
